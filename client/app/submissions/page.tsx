@@ -87,23 +87,22 @@ export default function SubmissionsPage() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="min-h-[calc(100vh-3rem)] flex-1 bg-background p-4 sm:p-6">
-          <div className="mx-auto w-full max-w-6xl">
+        <main className="min-h-[calc(100vh-3rem)] flex-1 bg-background px-5 py-10 sm:px-8">
+          <div className="mx-auto w-full max-w-4xl">
             <PageHeader
-              path="~/submissions"
               title="Submissions"
               description="Every solution you have sent to the judge, newest first."
             />
 
             {needsLogin ? (
-              <div className="rounded-lg border border-border bg-card px-4 py-10 text-center">
+              <div className="py-10">
                 <p className="text-sm text-muted-foreground">Log in to see your submission history.</p>
                 <Button asChild size="sm" className="mt-4">
                   <Link href="/login">Log in</Link>
                 </Button>
               </div>
             ) : error ? (
-              <div className="rounded-lg border border-border bg-card px-4 py-10 text-center">
+              <div className="py-10">
                 <p className="text-sm text-verdict-wa">{error}</p>
                 <Button onClick={loadSubmissions} variant="outline" size="sm" className="mt-4">
                   Try again
@@ -111,7 +110,7 @@ export default function SubmissionsPage() {
               </div>
             ) : (
               <>
-                <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                <div className="mb-10 grid grid-cols-2 gap-6 md:grid-cols-4">
                   <StatTile
                     label="Submissions"
                     value={loading || !stats ? '—' : stats.totalSubmissions}
@@ -121,14 +120,13 @@ export default function SubmissionsPage() {
                     label="Acceptance"
                     value={loading || !stats ? '—' : `${stats.successRate}%`}
                     hint={stats ? `${stats.successfulSubmissions} accepted` : undefined}
-                    tone="text-primary"
-                  />
+                                      />
                   <StatTile label="Problems solved" value={loading || !stats ? '—' : stats.uniqueProblemsSolved} />
                   <StatTile label="Avg runtime" value={loading || !stats ? '—' : `${stats.averageExecutionTime} ms`} />
                 </div>
 
-                <div className="overflow-hidden rounded-lg border border-border bg-card">
-                  <div className="grid grid-cols-[5.5rem_1fr_5rem] items-center gap-3 border-b border-border bg-muted/40 px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground md:grid-cols-[5.5rem_1fr_6rem_6rem_5rem_5rem_8rem]">
+                <div>
+                  <div className="grid grid-cols-[5.5rem_1fr_5rem] items-center gap-3 border-b border-border py-2 text-xs text-muted-foreground md:grid-cols-[5.5rem_1fr_6rem_6rem_5rem_5rem_8rem]">
                     <span>Verdict</span>
                     <span>Problem</span>
                     <span className="hidden md:block">Difficulty</span>
@@ -140,12 +138,12 @@ export default function SubmissionsPage() {
 
                   {loading ? (
                     Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="border-b border-border px-3 py-3 last:border-0">
+                      <div key={i} className="border-b border-border py-3">
                         <div className="h-4 w-full animate-pulse rounded bg-muted" />
                       </div>
                     ))
                   ) : submissions.length === 0 ? (
-                    <div className="px-3 py-12 text-center">
+                    <div className="py-12">
                       <p className="text-sm text-muted-foreground">No submissions yet.</p>
                       <Button asChild size="sm" className="mt-4">
                         <Link href="/practice">Browse problems</Link>
@@ -153,18 +151,18 @@ export default function SubmissionsPage() {
                     </div>
                   ) : (
                     submissions.map((s) => (
-                      <div key={s.id} className="border-b border-border last:border-0">
+                      <div key={s.id} className="border-b border-border">
                         <button
                           onClick={() => setOpen(open === s.id ? null : s.id)}
                           aria-expanded={open === s.id}
-                          className="grid w-full grid-cols-[5.5rem_1fr_5rem] items-center gap-3 px-3 py-2.5 text-left text-sm hover:bg-muted/50 md:grid-cols-[5.5rem_1fr_6rem_6rem_5rem_5rem_8rem]"
+                          className="grid w-full grid-cols-[5.5rem_1fr_5rem] items-center gap-3 py-3 text-left text-sm md:grid-cols-[5.5rem_1fr_6rem_6rem_5rem_5rem_8rem]"
                         >
                           <span>
                             <VerdictBadge verdict={verdictOf(s)} short />
                           </span>
-                          <span className="truncate font-medium text-foreground">{s.problem.title}</span>
+                          <span className="truncate text-foreground">{s.problem.title}</span>
                           <span className="hidden md:block">
-                            <DifficultyLabel difficulty={s.problem.difficulty} />
+                            <DifficultyLabel difficulty={s.problem.difficulty} className="text-xs" />
                           </span>
                           <span className="hidden font-mono text-xs text-muted-foreground md:block">
                             {getLanguage(s.language).label}
@@ -178,10 +176,10 @@ export default function SubmissionsPage() {
                           </span>
                         </button>
                         {open === s.id && (
-                          <div className="border-t border-border bg-editor px-3 py-3">
+                          <div className="pb-4">
                             <div className="mb-2 flex items-center justify-between">
                               <span className="font-mono text-xs text-muted-foreground">{getLanguage(s.language).file}</span>
-                              <Link href={`/solve/${s.problem.id}`} className="font-mono text-xs text-primary hover:underline">
+                              <Link href={`/solve/${s.problem.id}`} className="text-xs text-muted-foreground hover:text-foreground">
                                 open problem →
                               </Link>
                             </div>

@@ -83,8 +83,8 @@ export default function AIResumeAnalyzer() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-5">
+      <Card className="bg-transparent border border-border rounded-3xl overflow-hidden">
+        <CardHeader className="bg-muted p-5">
           <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
             <FileText className="w-6 h-6 mr-3 text-primary" />
             AI Resume Analyzer
@@ -146,12 +146,12 @@ export default function AIResumeAnalyzer() {
 
       {/* Analysis Results */}
       {analysis && (
-        <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 p-5">
+        <Card className="bg-transparent border border-border rounded-3xl overflow-hidden">
+          <CardHeader className="bg-muted p-5">
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
-                  <CheckCircle className="w-6 h-6 mr-3 text-green-500" />
+                  <CheckCircle className="w-6 h-6 mr-3 text-muted-foreground" />
                   Resume Analysis Results
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -191,12 +191,12 @@ export default function AIResumeAnalyzer() {
             
             <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border-l-4 border-blue-500">
               <div className="flex items-start gap-2">
-                <Lightbulb className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <Lightbulb className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                 <div>
                   <h4 className="font-semibold text-blue-700 dark:text-blue-300 mb-2">
                     Pro Tip
                   </h4>
-                  <p className="text-sm text-blue-600 dark:text-blue-400">
+                  <p className="text-sm text-muted-foreground dark:text-blue-400">
                     Use this analysis to update your resume before applying to internships. 
                     Focus on the specific recommendations for your target role to maximize your chances.
                   </p>

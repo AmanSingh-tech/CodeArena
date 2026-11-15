@@ -3,12 +3,12 @@
 export type Verdict = "AC" | "WA" | "TLE" | "MLE" | "RE" | "CE"
 
 export const VERDICTS: Record<Verdict, { label: string; className: string }> = {
-  AC: { label: "Accepted", className: "text-verdict-ac border-verdict-ac/30 bg-verdict-ac/10" },
-  WA: { label: "Wrong Answer", className: "text-verdict-wa border-verdict-wa/30 bg-verdict-wa/10" },
-  TLE: { label: "Time Limit Exceeded", className: "text-verdict-tle border-verdict-tle/30 bg-verdict-tle/10" },
-  MLE: { label: "Memory Limit Exceeded", className: "text-verdict-mle border-verdict-mle/30 bg-verdict-mle/10" },
-  RE: { label: "Runtime Error", className: "text-verdict-re border-verdict-re/30 bg-verdict-re/10" },
-  CE: { label: "Compilation Error", className: "text-verdict-ce border-verdict-ce/30 bg-verdict-ce/10" },
+  AC: { label: "Accepted", className: "text-verdict-ac" },
+  WA: { label: "Wrong Answer", className: "text-verdict-wa" },
+  TLE: { label: "Time Limit Exceeded", className: "text-verdict-tle" },
+  MLE: { label: "Memory Limit Exceeded", className: "text-verdict-mle" },
+  RE: { label: "Runtime Error", className: "text-verdict-re" },
+  CE: { label: "Compilation Error", className: "text-verdict-ce" },
 }
 
 export const VERDICT_TEXT: Record<Verdict, string> = {

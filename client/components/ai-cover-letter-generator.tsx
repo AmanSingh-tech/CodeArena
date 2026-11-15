@@ -105,8 +105,8 @@ export default function AICoverLetterGenerator() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-5">
+      <Card className="bg-transparent border border-border rounded-3xl overflow-hidden">
+        <CardHeader className="bg-muted p-5">
           <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
             <FileText className="w-6 h-6 mr-3 text-primary" />
             AI Cover Letter Generator
@@ -229,10 +229,10 @@ export default function AICoverLetterGenerator() {
 
       {/* Generated Cover Letter */}
       {coverLetter && (
-        <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 p-5">
+        <Card className="bg-transparent border border-border rounded-3xl overflow-hidden">
+          <CardHeader className="bg-muted p-5">
             <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
-              <FileText className="w-6 h-6 mr-3 text-accent" />
+              <FileText className="w-6 h-6 mr-3 text-muted-foreground" />
               Your AI-Generated Cover Letter
             </CardTitle>
             <CardDescription className="text-muted-foreground">
@@ -315,12 +315,12 @@ export default function AICoverLetterGenerator() {
             
             <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-2xl border-l-4 border-green-500">
               <div className="flex items-start gap-2">
-                <Sparkles className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <Sparkles className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                 <div>
                   <h4 className="font-semibold text-green-700 dark:text-green-300 mb-2">
                     Ready to Use!
                   </h4>
-                  <p className="text-sm text-green-600 dark:text-green-400">
+                  <p className="text-sm text-muted-foreground dark:text-green-400">
                     Your cover letter has been generated. Review it, make any personal adjustments, 
                     and include it with your internship application.
                   </p>

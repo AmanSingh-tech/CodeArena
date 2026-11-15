@@ -45,9 +45,9 @@ export function Header() {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search problems…"
+          placeholder="Search"
           aria-label="Search problems"
-          className="h-8 w-full rounded-md border border-border bg-muted/40 pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none"
+          className="h-8 w-full rounded-md bg-transparent pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:bg-muted focus:outline-none"
         />
       </form>
 

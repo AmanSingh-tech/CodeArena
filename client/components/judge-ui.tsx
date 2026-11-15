@@ -33,7 +33,7 @@ export function VerdictBadge({
     <span
       title={meta.label}
       className={cn(
-        "inline-flex items-center whitespace-nowrap rounded border px-1.5 py-0.5 font-mono text-xs font-medium",
+        "whitespace-nowrap font-mono text-xs font-medium",
         meta.className,
         className,
       )}
@@ -48,36 +48,37 @@ export function DifficultyLabel({ difficulty, className }: { difficulty: string;
   return <span className={cn("text-sm font-medium", DIFFICULTY_TEXT[level], className)}>{level}</span>
 }
 
-// Shared page heading: a mono path-style eyebrow, a title and an optional action.
+// Shared page heading: a title, one line of context and an optional action.
 export function PageHeader({
-  path,
   title,
   description,
   children,
 }: {
-  path: string
+  path?: string
   title: string
   description?: string
   children?: React.ReactNode
 }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
+    <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0">
-        <div className="mb-1 font-mono text-xs text-primary">{path}</div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
-        {description && <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{description}</p>}
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{title}</h1>
+        {description && <p className="mt-1 max-w-xl text-sm text-muted-foreground">{description}</p>}
       </div>
       {children && <div className="flex items-center gap-2">{children}</div>}
     </div>
   )
 }
 
+// A plain figure with a label under it. No box: a row of these reads as one line.
 export function StatTile({ label, value, hint, tone }: { label: string; value: React.ReactNode; hint?: string; tone?: string }) {
   return (
-    <div className="rounded-lg border border-border bg-card px-4 py-3">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className={cn("tabular mt-1 font-mono text-2xl font-semibold text-foreground", tone)}>{value}</div>
-      {hint && <div className="mt-0.5 text-xs text-muted-foreground">{hint}</div>}
+    <div>
+      <div className={cn("tabular font-mono text-xl font-medium text-foreground", tone)}>{value}</div>
+      <div className="mt-0.5 text-xs text-muted-foreground">
+        {label}
+        {hint ? ` · ${hint}` : ""}
+      </div>
     </div>
   )
 }
@@ -110,11 +111,11 @@ export function CodeEditorPane({
           inherit: true,
           rules: [],
           colors: {
-            "editor.background": "#0c0e11",
-            "editor.lineHighlightBackground": "#14171c",
-            "editorLineNumber.foreground": "#4b5261",
-            "editorLineNumber.activeForeground": "#aab1bd",
-            "editorGutter.background": "#0c0e11",
+            "editor.background": "#0d0d0d",
+            "editor.lineHighlightBackground": "#151515",
+            "editorLineNumber.foreground": "#4a4a4a",
+            "editorLineNumber.activeForeground": "#b0b0b0",
+            "editorGutter.background": "#0d0d0d",
           },
         })
       }}
@@ -127,7 +128,10 @@ export function CodeEditorPane({
         scrollBeyondLastLine: false,
         automaticLayout: true,
         tabSize: 4,
-        renderLineHighlight: "line",
+        renderLineHighlight: "none",
+        overviewRulerLanes: 0,
+        hideCursorInOverviewRuler: true,
+        guides: { indentation: false },
         padding: { top: 12, bottom: 12 },
         smoothScrolling: true,
         scrollbar: { verticalScrollbarSize: 8, horizontalScrollbarSize: 8 },

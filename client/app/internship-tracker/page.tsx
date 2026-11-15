@@ -77,7 +77,7 @@ export default function InternshipTrackerPage() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="flex-1 p-5 bg-gradient-main min-h-screen">
+        <main className="flex-1 p-5 bg-background min-h-[calc(100vh-3rem)]">
           <div className="max-w-7xl mx-auto">
             {/* Header Section */}
             <div className="mb-6">
@@ -98,62 +98,62 @@ export default function InternshipTrackerPage() {
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-purple">
+                <Card className="bg-transparent border border-border transition-all rounded-3xl feature-card">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-foreground text-sm font-bold flex items-center">
-                      <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center mr-3">
+                    <CardTitle className="text-foreground text-sm font-medium flex items-center">
+                      <div className="w-8 h-8 bg-muted rounded-xl flex items-center justify-center mr-3">
                         <Building className="w-4 h-4 text-primary" />
                       </div>
                       Total Applications
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-semibold font-mono text-primary">24</div>
+                    <div className="text-2xl font-medium font-mono text-foreground">24</div>
                     <div className="text-sm text-muted-foreground mt-1">+3 this week</div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-blue">
+                <Card className="bg-transparent border border-border transition-all rounded-3xl feature-card">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-foreground text-sm font-bold flex items-center">
-                      <div className="w-8 h-8 bg-accent/20 rounded-xl flex items-center justify-center mr-3">
-                        <Clock className="w-4 h-4 text-accent" />
+                    <CardTitle className="text-foreground text-sm font-medium flex items-center">
+                      <div className="w-8 h-8 bg-muted rounded-xl flex items-center justify-center mr-3">
+                        <Clock className="w-4 h-4 text-muted-foreground" />
                       </div>
                       In Progress
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-semibold font-mono text-accent">8</div>
+                    <div className="text-2xl font-medium font-mono text-foreground">8</div>
                     <div className="text-sm text-muted-foreground mt-1">Active interviews</div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
+                <Card className="bg-transparent border border-border transition-all rounded-3xl feature-card">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-foreground text-sm font-bold flex items-center">
-                      <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center mr-3">
+                    <CardTitle className="text-foreground text-sm font-medium flex items-center">
+                      <div className="w-8 h-8 bg-muted rounded-xl flex items-center justify-center mr-3">
                         <DollarSign className="w-4 h-4 text-primary" />
                       </div>
                       Offers
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-semibold font-mono text-primary">3</div>
+                    <div className="text-2xl font-medium font-mono text-foreground">3</div>
                     <div className="text-sm text-muted-foreground mt-1">Pending decisions</div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
+                <Card className="bg-transparent border border-border transition-all rounded-3xl feature-card">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-foreground text-sm font-bold flex items-center">
-                      <div className="w-8 h-8 bg-accent/20 rounded-xl flex items-center justify-center mr-3">
-                        <Brain className="w-4 h-4 text-accent" />
+                    <CardTitle className="text-foreground text-sm font-medium flex items-center">
+                      <div className="w-8 h-8 bg-muted rounded-xl flex items-center justify-center mr-3">
+                        <Brain className="w-4 h-4 text-muted-foreground" />
                       </div>
                       AI Insights
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-semibold font-mono text-accent">92%</div>
+                    <div className="text-2xl font-medium font-mono text-foreground">92%</div>
                     <div className="text-sm text-muted-foreground mt-1">Success score</div>
                   </CardContent>
                 </Card>
@@ -162,7 +162,7 @@ export default function InternshipTrackerPage() {
 
             {/* Main Content with Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-8 bg-card/80 border border-border rounded-2xl p-2">
+              <TabsList className="grid w-full grid-cols-4 mb-8 bg-transparent border border-border rounded-2xl p-2">
                 <TabsTrigger 
                   value="applications" 
                   className="rounded-xl font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -200,12 +200,12 @@ export default function InternshipTrackerPage() {
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                     <Input
                       placeholder="Search applications by company, position, or status..."
-                      className="pl-12 h-14 bg-card/80 border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-2xl text-lg"
+                      className="pl-12 h-14 bg-transparent border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-2xl text-lg"
                     />
                   </div>
                   <Button
                     variant="outline"
-                    className="h-14 px-8 border border-primary/30 bg-card/80 text-primary hover:bg-primary/10 rounded-2xl font-semibold"
+                    className="h-14 px-8 border border-primary/30 bg-transparent text-primary hover:bg-primary/10 rounded-2xl font-semibold"
                   >
                     <Filter className="w-5 h-5 mr-2" />
                     Filter & Sort
@@ -221,9 +221,9 @@ export default function InternshipTrackerPage() {
 
                 {/* Add New Application CTA */}
                 <div className="mt-16 text-center">
-                  <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-3xl p-12 border border-primary/20">
+                  <div className="bg-muted rounded-3xl p-12 border border-primary/20">
                     <div className="max-w-2xl mx-auto">
-                      <h3 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                      <h3 className="text-3xl font-semibold mb-4 text-foreground">
                         Ready to apply to more internships?
                       </h3>
                       <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
@@ -272,12 +272,12 @@ export default function InternshipTrackerPage() {
 // Application Card Component
 function ApplicationCard({ internship }: { internship: any }) {
   return (
-    <Card className="bg-card/90 border border-border hover:border-primary/50 transition-all duration-300 rounded-3xl overflow-hidden feature-card">
+    <Card className="bg-transparent border border-border hover:border-primary/50 transition-all duration-300 rounded-3xl overflow-hidden feature-card">
       <CardHeader className="p-5">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-6">
             {/* Company Logo */}
-            <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
+            <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center">
               <span className="text-primary-foreground font-semibold text-xl">{internship.logo}</span>
             </div>
 
@@ -297,14 +297,14 @@ function ApplicationCard({ internship }: { internship: any }) {
 
           <Badge
             variant="outline"
-            className={`px-4 py-2 text-sm font-bold rounded-xl border ${
+            className={`px-4 py-2 text-sm font-medium rounded-xl border ${
               internship.status === "offer"
-                ? "text-green-400 border-green-500/30 bg-green-500/10"
+                ? "text-muted-foreground border-green-500/30 bg-muted"
                 : internship.status === "interview"
-                  ? "text-accent border-accent/30 bg-accent/10"
+                  ? "text-muted-foreground border-accent/30 bg-muted"
                   : internship.status === "applied"
-                    ? "text-primary border-primary/30 bg-primary/10"
-                    : "text-red-400 border-red-500/30 bg-red-500/10"
+                    ? "text-primary border-primary/30 bg-muted"
+                    : "text-muted-foreground border-red-500/30 bg-muted"
             }`}
           >
             {internship.status.charAt(0).toUpperCase() + internship.status.slice(1)}
@@ -315,7 +315,7 @@ function ApplicationCard({ internship }: { internship: any }) {
       <CardContent className="px-8 pb-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center">
               <MapPin className="w-5 h-5 text-primary" />
             </div>
             <div>
@@ -325,8 +325,8 @@ function ApplicationCard({ internship }: { internship: any }) {
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-accent/20 rounded-xl flex items-center justify-center">
-              <Clock className="w-5 h-5 text-accent" />
+            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center">
+              <Clock className="w-5 h-5 text-muted-foreground" />
             </div>
             <div>
               <div className="text-sm text-muted-foreground font-medium">Duration</div>
@@ -335,7 +335,7 @@ function ApplicationCard({ internship }: { internship: any }) {
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-primary" />
             </div>
             <div>
@@ -345,12 +345,12 @@ function ApplicationCard({ internship }: { internship: any }) {
           </div>
 
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-accent/20 rounded-xl flex items-center justify-center">
-              <Building className="w-5 h-5 text-accent" />
+            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center">
+              <Building className="w-5 h-5 text-muted-foreground" />
             </div>
             <div>
               <div className="text-sm text-muted-foreground font-medium">Type</div>
-              <Badge variant="outline" className="border-accent/30 text-accent bg-accent/10 font-semibold">
+              <Badge variant="outline" className="border-accent/30 text-muted-foreground bg-muted font-semibold">
                 {internship.type}
               </Badge>
             </div>

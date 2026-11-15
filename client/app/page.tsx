@@ -11,8 +11,8 @@ export default function HomePage() {
       <AppSidebar />
       <SidebarInset className="flex min-h-screen w-full flex-1 flex-col">
         <Header />
-        <main className="w-full flex-1 overflow-auto p-4 sm:p-6">
-          <div className="mx-auto w-full max-w-6xl">
+        <main className="w-full flex-1 overflow-auto px-5 sm:px-8">
+          <div className="mx-auto w-full max-w-4xl">
             <HeroSection />
             <FeatureCards />
             <Footer />

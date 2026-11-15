@@ -108,8 +108,8 @@ export default function AIRecommendations() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-5">
+      <Card className="bg-transparent border border-border rounded-3xl overflow-hidden">
+        <CardHeader className="bg-muted p-5">
           <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
             <Brain className="w-6 h-6 mr-3 text-primary" />
             AI-Powered Internship Recommendations
@@ -194,7 +194,7 @@ export default function AIRecommendations() {
           {/* Preferences Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground flex items-center">
-              <Users className="w-5 h-5 mr-2 text-accent" />
+              <Users className="w-5 h-5 mr-2 text-muted-foreground" />
               Your Preferences
             </h3>
             
@@ -278,10 +278,10 @@ export default function AIRecommendations() {
 
       {/* Recommendations Results */}
       {recommendations && (
-        <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 p-5">
+        <Card className="bg-transparent border border-border rounded-3xl overflow-hidden">
+          <CardHeader className="bg-muted p-5">
             <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
-              <TrendingUp className="w-6 h-6 mr-3 text-accent" />
+              <TrendingUp className="w-6 h-6 mr-3 text-muted-foreground" />
               Your Personalized Recommendations
             </CardTitle>
             <CardDescription className="text-muted-foreground">

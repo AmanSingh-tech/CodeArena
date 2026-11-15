@@ -55,16 +55,10 @@ const groups = [
 
 export function Logo({ collapsedAware = false }: { collapsedAware?: boolean }) {
   return (
-    <Link href="/" className="flex items-center gap-2.5">
-      <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md border border-primary/40 bg-primary/10 font-mono text-xs font-bold text-primary">
-        {">_"}
-      </span>
-      <span
-        className={`font-mono text-sm font-semibold tracking-tight text-foreground ${
-          collapsedAware ? "group-data-[collapsible=icon]:hidden" : ""
-        }`}
-      >
-        code<span className="text-primary">arena</span>
+    <Link href="/" className="flex items-center gap-2 text-foreground">
+      <span className="font-mono text-sm font-semibold">{">_"}</span>
+      <span className={`text-sm font-semibold tracking-tight ${collapsedAware ? "group-data-[collapsible=icon]:hidden" : ""}`}>
+        CodeArena
       </span>
     </Link>
   )
@@ -75,17 +69,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border" variant="sidebar">
-      <SidebarHeader className="h-12 justify-center border-b border-sidebar-border px-3 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
+      <SidebarHeader className="h-12 justify-center px-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0">
         <Logo collapsedAware />
       </SidebarHeader>
-      <SidebarContent className="gap-0 py-2">
+      <SidebarContent className="gap-3 px-1 py-3">
         {groups.map((group) => (
-          <SidebarGroup key={group.label} className="py-1.5">
-            <SidebarGroupLabel className="h-7 px-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground group-data-[collapsible=icon]:sr-only">
-              {group.label}
-            </SidebarGroupLabel>
+          <SidebarGroup key={group.label} className="p-0 px-1">
+            <SidebarGroupLabel className="sr-only">{group.label}</SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu className="gap-0.5">
+              <SidebarMenu className="gap-px">
                 {group.items.map((item) => {
                   const isActive = item.match.some((m) => pathname === m || pathname.startsWith(`${m}/`))
                   return (
@@ -94,10 +86,10 @@ export function AppSidebar() {
                         asChild
                         isActive={isActive}
                         tooltip={item.name}
-                        className="relative rounded-md px-3 text-sidebar-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-0.5 data-[active=true]:before:rounded-full data-[active=true]:before:bg-primary"
+                        className="rounded-md px-3 font-normal text-sidebar-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
                       >
                         <Link href={item.href}>
-                          <item.icon className={isActive ? "text-primary" : "text-muted-foreground"} />
+                          <item.icon strokeWidth={1.75} />
                           <span>{item.name}</span>
                         </Link>
                       </SidebarMenuButton>

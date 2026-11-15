@@ -73,7 +73,7 @@ export default function LearnPage() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="flex-1 p-5 bg-gradient-main min-h-screen">
+        <main className="flex-1 p-5 bg-background min-h-[calc(100vh-3rem)]">
           <div className="max-w-7xl mx-auto">
             <div className="mb-6">
               <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1">
@@ -85,62 +85,62 @@ export default function LearnPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-purple">
+              <Card className="bg-transparent border border-border transition-all rounded-3xl feature-card">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-foreground text-sm font-bold flex items-center">
-                    <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center mr-3">
+                  <CardTitle className="text-foreground text-sm font-medium flex items-center">
+                    <div className="w-8 h-8 bg-muted rounded-xl flex items-center justify-center mr-3">
                       <BookOpen className="w-4 h-4 text-primary" />
                     </div>
                     Courses Enrolled
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-semibold font-mono text-primary">8</div>
+                  <div className="text-2xl font-medium font-mono text-foreground">8</div>
                   <div className="text-sm text-muted-foreground mt-1">Active learning</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-blue">
+              <Card className="bg-transparent border border-border transition-all rounded-3xl feature-card">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-foreground text-sm font-bold flex items-center">
-                    <div className="w-8 h-8 bg-accent/20 rounded-xl flex items-center justify-center mr-3">
-                      <CheckCircle className="w-4 h-4 text-accent" />
+                  <CardTitle className="text-foreground text-sm font-medium flex items-center">
+                    <div className="w-8 h-8 bg-muted rounded-xl flex items-center justify-center mr-3">
+                      <CheckCircle className="w-4 h-4 text-muted-foreground" />
                     </div>
                     Completed
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-semibold font-mono text-accent">3</div>
+                  <div className="text-2xl font-medium font-mono text-foreground">3</div>
                   <div className="text-sm text-muted-foreground mt-1">Certificates earned</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
+              <Card className="bg-transparent border border-border transition-all rounded-3xl feature-card">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-foreground text-sm font-bold flex items-center">
-                    <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center mr-3">
+                  <CardTitle className="text-foreground text-sm font-medium flex items-center">
+                    <div className="w-8 h-8 bg-muted rounded-xl flex items-center justify-center mr-3">
                       <Clock className="w-4 h-4 text-primary" />
                     </div>
                     Hours Learned
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-semibold font-mono text-primary">47</div>
+                  <div className="text-2xl font-medium font-mono text-foreground">47</div>
                   <div className="text-sm text-muted-foreground mt-1">This month</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
+              <Card className="bg-transparent border border-border transition-all rounded-3xl feature-card">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-foreground text-sm font-bold flex items-center">
-                    <div className="w-8 h-8 bg-accent/20 rounded-xl flex items-center justify-center mr-3">
-                      <TrendingUp className="w-4 h-4 text-accent" />
+                  <CardTitle className="text-foreground text-sm font-medium flex items-center">
+                    <div className="w-8 h-8 bg-muted rounded-xl flex items-center justify-center mr-3">
+                      <TrendingUp className="w-4 h-4 text-muted-foreground" />
                     </div>
                     Current Streak
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-semibold font-mono text-accent">12</div>
+                  <div className="text-2xl font-medium font-mono text-foreground">12</div>
                   <div className="text-sm text-muted-foreground mt-1">Days active</div>
                 </CardContent>
               </Card>
@@ -155,12 +155,12 @@ export default function LearnPage() {
                     {learningPaths.map((path) => (
                       <Card
                         key={path.id}
-                        className="bg-card/90 border border-border hover:border-primary/50 transition-all duration-300 rounded-3xl feature-card"
+                        className="bg-transparent border border-border hover:border-primary/50 transition-all duration-300 rounded-3xl feature-card"
                       >
                         <CardHeader className="p-5">
                           <div className="flex items-start justify-between">
                             <div className="flex items-start space-x-6">
-                              <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
+                              <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center">
                                 <BookOpen className="w-8 h-8 text-primary-foreground" />
                               </div>
                               <div className="flex-1">
@@ -178,7 +178,7 @@ export default function LearnPage() {
                                     <span className="font-medium">{path.duration}</span>
                                   </div>
                                   <div className="flex items-center space-x-2">
-                                    <Star className="w-4 h-4 text-yellow-500" />
+                                    <Star className="w-4 h-4 text-muted-foreground" />
                                     <span className="font-medium">{path.rating}</span>
                                   </div>
                                 </div>
@@ -188,10 +188,10 @@ export default function LearnPage() {
                               variant="outline"
                               className={`px-4 py-2 font-semibold rounded-xl border ${
                                 path.difficulty === "Beginner"
-                                  ? "text-green-400 border-green-500/30 bg-green-500/10"
+                                  ? "text-muted-foreground border-green-500/30 bg-muted"
                                   : path.difficulty === "Intermediate"
-                                    ? "text-yellow-400 border-yellow-500/30 bg-yellow-500/10"
-                                    : "text-red-400 border-red-500/30 bg-red-500/10"
+                                    ? "text-muted-foreground border-yellow-500/30 bg-muted"
+                                    : "text-muted-foreground border-red-500/30 bg-muted"
                               }`}
                             >
                               {path.difficulty}
@@ -202,7 +202,7 @@ export default function LearnPage() {
                           <div className="mb-6">
                             <div className="flex justify-between text-sm mb-3">
                               <span className="text-muted-foreground font-medium">Progress</span>
-                              <span className="font-bold text-foreground">{path.progress}%</span>
+                              <span className="font-medium text-foreground">{path.progress}%</span>
                             </div>
                             <Progress value={path.progress} className="h-3" />
                           </div>
@@ -224,9 +224,9 @@ export default function LearnPage() {
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Continue Learning */}
-                <Card className="bg-card/90 border border-border rounded-3xl dark:glow-purple">
+                <Card className="bg-transparent border border-border rounded-3xl">
                   <CardHeader>
-                    <CardTitle className="text-foreground font-bold">Continue Learning</CardTitle>
+                    <CardTitle className="text-foreground font-medium">Continue Learning</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -236,16 +236,16 @@ export default function LearnPage() {
                           className="flex items-center space-x-4 p-4 bg-muted/50 rounded-2xl border border-border hover:bg-primary/10 transition-colors"
                         >
                           {lesson.completed ? (
-                            <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
-                              <CheckCircle className="w-5 h-5 text-green-400" />
+                            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center">
+                              <CheckCircle className="w-5 h-5 text-muted-foreground" />
                             </div>
                           ) : (
-                            <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center">
+                            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center">
                               <Play className="w-5 h-5 text-primary" />
                             </div>
                           )}
                           <div className="flex-1">
-                            <div className="text-sm font-bold text-foreground">{lesson.title}</div>
+                            <div className="text-sm font-medium text-foreground">{lesson.title}</div>
                             <div className="text-muted-foreground text-xs">{lesson.path}</div>
                           </div>
                           <div className="text-muted-foreground text-xs font-medium">{lesson.duration}</div>
@@ -256,17 +256,17 @@ export default function LearnPage() {
                 </Card>
 
                 {/* Daily Challenge */}
-                <Card className="bg-card/90 border border-border rounded-3xl dark:glow-blue">
+                <Card className="bg-transparent border border-border rounded-3xl">
                   <CardHeader>
-                    <CardTitle className="text-foreground font-bold">Daily Challenge</CardTitle>
+                    <CardTitle className="text-foreground font-medium">Daily Challenge</CardTitle>
                     <CardDescription className="text-muted-foreground">
                       Solve today's problem to maintain your streak
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="mb-6">
-                      <h3 className="font-bold text-foreground mb-3">Valid Parentheses</h3>
-                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30 font-semibold mb-4 px-3 py-1 rounded-xl">
+                      <h3 className="font-medium text-foreground mb-3">Valid Parentheses</h3>
+                      <Badge className="bg-muted text-muted-foreground border-green-500/30 font-semibold mb-4 px-3 py-1 rounded-xl">
                         Easy
                       </Badge>
                       <p className="text-muted-foreground text-sm leading-relaxed">
@@ -281,36 +281,36 @@ export default function LearnPage() {
                 </Card>
 
                 {/* Achievements */}
-                <Card className="bg-card/90 border border-border rounded-3xl">
+                <Card className="bg-transparent border border-border rounded-3xl">
                   <CardHeader>
-                    <CardTitle className="text-foreground font-bold">Recent Achievements</CardTitle>
+                    <CardTitle className="text-foreground font-medium">Recent Achievements</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="flex items-center space-x-4 p-3 bg-yellow-500/10 rounded-2xl border border-yellow-500/20">
-                        <div className="w-12 h-12 bg-yellow-500/20 rounded-2xl flex items-center justify-center">
-                          <Award className="w-6 h-6 text-yellow-400" />
+                      <div className="flex items-center space-x-4 p-3 bg-muted rounded-2xl border border-yellow-500/20">
+                        <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center">
+                          <Award className="w-6 h-6 text-muted-foreground" />
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-foreground">Course Completed</div>
+                          <div className="text-sm font-medium text-foreground">Course Completed</div>
                           <div className="text-muted-foreground text-xs">Finished "Arrays & Strings"</div>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-4 p-3 bg-primary/10 rounded-2xl border border-primary/20">
-                        <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
+                      <div className="flex items-center space-x-4 p-3 bg-muted rounded-2xl border border-primary/20">
+                        <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center">
                           <TrendingUp className="w-6 h-6 text-primary" />
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-foreground">Learning Streak</div>
+                          <div className="text-sm font-medium text-foreground">Learning Streak</div>
                           <div className="text-muted-foreground text-xs">12 days in a row</div>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-4 p-3 bg-green-500/10 rounded-2xl border border-green-500/20">
-                        <div className="w-12 h-12 bg-green-500/20 rounded-2xl flex items-center justify-center">
-                          <Star className="w-6 h-6 text-green-400" />
+                      <div className="flex items-center space-x-4 p-3 bg-muted rounded-2xl border border-green-500/20">
+                        <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center">
+                          <Star className="w-6 h-6 text-muted-foreground" />
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-foreground">Perfect Score</div>
+                          <div className="text-sm font-medium text-foreground">Perfect Score</div>
                           <div className="text-muted-foreground text-xs">Aced "Binary Trees" quiz</div>
                         </div>
                       </div>

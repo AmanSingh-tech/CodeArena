@@ -46,8 +46,8 @@ export default function LoginPage() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-gradient-main min-h-[calc(100vh-3rem)]">
-          <Card className="w-full max-w-md bg-card/90 border border-border rounded-3xl dark:glow-purple">
+        <main className="flex-1 flex items-center justify-center p-4 sm:p-6  bg-gradient-main min-h-[calc(100vh-3rem)]">
+          <Card className="w-full max-w-md bg-transparent border border-border rounded-3xl">
             <CardHeader className="text-center p-6 sm:p-8">
               <CardTitle className="text-2xl font-semibold tracking-tight text-foreground mb-2">Welcome Back!</CardTitle>
               <CardDescription className="text-muted-foreground text-sm">
@@ -98,7 +98,7 @@ export default function LoginPage() {
                 </Button>
 
                 {error && (
-                  <p className="text-sm text-red-500 text-center">{error}</p>
+                  <p className="text-sm text-muted-foreground text-center">{error}</p>
                 )}
               </form>
 

@@ -12,10 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Search, Plus, CheckCircle2, CircleDashed, Circle, WifiOff } from "lucide-react"
+import { Search, Plus, CheckCircle2, CircleDashed, WifiOff } from "lucide-react"
 import { createProblem, getProblems, getStoredToken, getUserSubmissions } from "@/lib/api"
 import { getAllProblems } from "@/lib/problems-data"
-import { DifficultyLabel, PageHeader, StatTile } from "@/components/judge-ui"
+import { DifficultyLabel, PageHeader } from "@/components/judge-ui"
 import { normalizeDifficulty, type Difficulty } from "@/lib/judge"
 import { cn } from "@/lib/utils"
 
@@ -176,18 +176,21 @@ function PracticeContent() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="min-h-[calc(100vh-3rem)] flex-1 bg-background p-4 sm:p-6">
-          <div className="mx-auto w-full max-w-6xl">
+        <main className="min-h-[calc(100vh-3rem)] flex-1 bg-background px-5 py-10 sm:px-8">
+          <div className="mx-auto w-full max-w-3xl">
             <PageHeader
-              path="~/problems"
               title="Problems"
-              description="Every problem is judged on hidden test cases with a time and memory limit."
+              description={
+                loading
+                  ? undefined
+                  : `${counts.total} problems · ${counts.solved} solved`
+              }
             >
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm" variant="outline" className="h-8">
+                  <Button size="sm" variant="ghost" className="h-8 text-muted-foreground">
                     <Plus className="mr-1.5 h-4 w-4" />
-                    New problem
+                    New
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
@@ -272,7 +275,7 @@ function PracticeContent() {
             </PageHeader>
 
             {offline && !loading && (
-              <div className="mb-4 flex items-start gap-2 rounded-lg border border-medium/30 bg-medium/10 px-3 py-2 text-sm text-foreground">
+              <div className="mb-4 flex items-start gap-2 text-sm text-muted-foreground">
                 <WifiOff className="mt-0.5 h-4 w-4 flex-shrink-0 text-medium" />
                 <span>
                   The judge API is not reachable, so this is the bundled sample set. You can read and run these, but
@@ -281,34 +284,24 @@ function PracticeContent() {
               </div>
             )}
 
-            <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-5">
-              <StatTile label="Problems" value={loading ? "—" : counts.total} />
-              <StatTile label="Solved" value={loading ? "—" : counts.solved} tone="text-primary" />
-              <StatTile label="Easy" value={loading ? "—" : counts.easy} tone="text-easy" />
-              <StatTile label="Medium" value={loading ? "—" : counts.medium} tone="text-medium" />
-              <StatTile label="Hard" value={loading ? "—" : counts.hard} tone="text-hard" />
-            </div>
-
-            <div className="mb-3 flex flex-wrap items-center gap-2">
+            <div className="mb-4 flex flex-wrap items-center gap-4">
               <div className="relative min-w-[200px] flex-1">
                 <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Filter by title or tag"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-9 pl-8"
+                  className="h-9 border-0 bg-muted/60 pl-8 shadow-none focus-visible:ring-1"
                 />
               </div>
-              <div className="flex rounded-md border border-border p-0.5">
+              <div className="flex gap-3">
                 {DIFFICULTIES.map((d) => (
                   <button
                     key={d}
                     onClick={() => setDifficulty(d)}
                     className={cn(
-                      "h-7 rounded px-2.5 text-sm transition-colors",
-                      difficulty === d
-                        ? "bg-muted font-medium text-foreground"
-                        : "text-muted-foreground hover:text-foreground",
+                      "text-sm transition-colors",
+                      difficulty === d ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                     )}
                   >
                     {d === "all" ? "All" : d}
@@ -317,7 +310,7 @@ function PracticeContent() {
               </div>
               {allTags.length > 0 && (
                 <Select value={tag} onValueChange={setTag}>
-                  <SelectTrigger className="h-9 w-[170px]">
+                  <SelectTrigger className="h-9 w-[150px] border-0 bg-transparent text-muted-foreground shadow-none">
                     <SelectValue placeholder="Tag" />
                   </SelectTrigger>
                   <SelectContent>
@@ -332,68 +325,46 @@ function PracticeContent() {
               )}
             </div>
 
-            <div className="overflow-hidden rounded-lg border border-border bg-card">
-              <div className="grid grid-cols-[2.5rem_3rem_1fr_6rem] items-center gap-2 border-b border-border bg-muted/40 px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground sm:grid-cols-[2.5rem_3rem_1fr_14rem_6rem]">
-                <span className="text-center">St</span>
-                <span>#</span>
-                <span>Title</span>
-                <span className="hidden sm:block">Tags</span>
-                <span>Difficulty</span>
-              </div>
-
+            <div>
               {loading ? (
                 Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="border-b border-border px-3 py-3 last:border-0">
+                  <div key={i} className="border-b border-border py-3">
                     <div className="h-4 w-full animate-pulse rounded bg-muted" />
                   </div>
                 ))
               ) : filtered.length === 0 ? (
-                <div className="px-3 py-12 text-center text-sm text-muted-foreground">
+                <div className="py-12 text-sm text-muted-foreground">
                   {problems.length === 0 ? "No problems yet. Add the first one." : "No problems match these filters."}
                 </div>
               ) : (
                 filtered.map((problem) => {
                   const st = status[problem.id] || "todo"
-                  const number = problems.indexOf(problem) + 1
-                  return (
+                                    return (
                     <Link
                       key={problem.id}
                       href={`/solve/${problem.id}`}
-                      className="group grid grid-cols-[2.5rem_3rem_1fr_6rem] items-center gap-2 border-b border-border px-3 py-2.5 text-sm transition-colors last:border-0 hover:bg-muted/50 sm:grid-cols-[2.5rem_3rem_1fr_14rem_6rem]"
+                      className="group grid grid-cols-[1.5rem_1fr_5rem] items-center gap-3 border-b border-border py-3 text-sm sm:grid-cols-[1.5rem_1fr_auto_5rem]"
                     >
-                      <span className="flex justify-center" title={st === "solved" ? "Solved" : st === "attempted" ? "Attempted" : "Not attempted"}>
+                      <span className="flex" title={st === "solved" ? "Solved" : st === "attempted" ? "Attempted" : "Not attempted"}>
                         {st === "solved" ? (
-                          <CheckCircle2 className="h-4 w-4 text-primary" />
+                          <CheckCircle2 className="h-4 w-4 text-verdict-ac" />
                         ) : st === "attempted" ? (
                           <CircleDashed className="h-4 w-4 text-medium" />
                         ) : (
-                          <Circle className="h-4 w-4 text-border" />
+                          <span className="h-4 w-4" />
                         )}
                       </span>
-                      <span className="tabular font-mono text-xs text-muted-foreground">{number}</span>
-                      <span className="truncate font-medium text-foreground group-hover:text-primary">{problem.title}</span>
-                      <span className="hidden gap-1 overflow-hidden sm:flex">
-                        {problem.tags.slice(0, 2).map((t) => (
-                          <span
-                            key={t}
-                            className="truncate rounded border border-border px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground"
-                          >
-                            {t}
-                          </span>
-                        ))}
+                      <span className="truncate text-foreground underline-offset-4 group-hover:underline">{problem.title}</span>
+                      <span className="hidden truncate text-xs text-muted-foreground sm:block">
+                        {problem.tags.slice(0, 2).join(", ")}
                       </span>
-                      <DifficultyLabel difficulty={problem.difficulty} />
+                      <DifficultyLabel difficulty={problem.difficulty} className="text-right text-xs" />
                     </Link>
                   )
                 })
               )}
             </div>
 
-            {!loading && filtered.length > 0 && (
-              <p className="mt-3 font-mono text-xs text-muted-foreground">
-                {filtered.length} of {problems.length} problems
-              </p>
-            )}
           </div>
         </main>
       </SidebarInset>

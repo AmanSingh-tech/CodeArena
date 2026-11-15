@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { Loader2, Play, RotateCcw, Send, ChevronRight, Lightbulb, Bug, Clock, MemoryStick, WifiOff } from "lucide-react"
+import { Loader2, RotateCcw, ChevronRight, WifiOff } from "lucide-react"
 import {
   findError,
   getHint,
@@ -121,9 +121,9 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
     <button
       onClick={onClick}
       className={cn(
-        "relative h-9 px-3 text-sm transition-colors",
+        "relative h-10 px-3 text-sm transition-colors",
         active
-          ? "font-medium text-foreground after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-primary"
+          ? "text-foreground"
           : "text-muted-foreground hover:text-foreground",
       )}
     >
@@ -135,8 +135,8 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
 function Block({ label, children, tone }: { label: string; children: React.ReactNode; tone?: string }) {
   return (
     <div>
-      <div className="mb-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <pre className={cn("overflow-x-auto whitespace-pre-wrap break-words rounded-md border border-border bg-muted/40 px-3 py-2 font-mono text-[13px] leading-relaxed text-foreground", tone)}>
+      <div className="mb-1 text-xs text-muted-foreground">{label}</div>
+      <pre className={cn("overflow-x-auto whitespace-pre-wrap break-words rounded-md bg-muted/60 px-3 py-2 font-mono text-[13px] leading-relaxed text-foreground", tone)}>
         {children}
       </pre>
     </div>
@@ -409,7 +409,7 @@ export default function SolvePage() {
 
   const statement = (
     <div className="flex h-full flex-col bg-background">
-      <div className="flex flex-shrink-0 items-center border-b border-border px-1">
+      <div className="flex flex-shrink-0 items-center px-3">
         <TabButton active={leftTab === "statement"} onClick={() => setLeftTab("statement")}>
           Statement
         </TabButton>
@@ -423,27 +423,19 @@ export default function SolvePage() {
 
       <div className="flex-1 overflow-y-auto">
         {leftTab === "statement" && (
-          <div className="space-y-6 p-5">
+          <div className="space-y-7 px-6 py-6">
             <div>
               <h1 className="text-xl font-semibold tracking-tight text-foreground">{problem.title}</h1>
               <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                 <DifficultyLabel difficulty={problem.difficulty} className="text-xs" />
-                <span className="flex items-center gap-1 font-mono">
-                  <Clock className="h-3.5 w-3.5" /> 3 s
-                </span>
-                <span className="flex items-center gap-1 font-mono">
-                  <MemoryStick className="h-3.5 w-3.5" /> 256 MB
-                </span>
-                {problem.tags.map((t) => (
-                  <span key={t} className="rounded border border-border px-1.5 py-0.5 font-mono text-[11px]">
-                    {t}
-                  </span>
-                ))}
+                <span>3 s</span>
+                <span>256 MB</span>
+                {problem.tags.length > 0 && <span>{problem.tags.join(", ")}</span>}
               </div>
             </div>
 
             {problem.offline && (
-              <div className="flex items-start gap-2 rounded-md border border-medium/30 bg-medium/10 px-3 py-2 text-sm">
+              <div className="flex items-start gap-2 text-sm text-muted-foreground">
                 <WifiOff className="mt-0.5 h-4 w-4 flex-shrink-0 text-medium" />
                 <span>Bundled sample problem. You can run code against your own input; submitting needs the judge server.</span>
               </div>
@@ -455,7 +447,7 @@ export default function SolvePage() {
               <div className="space-y-4">
                 {problem.samples.map((sample, i) => (
                   <div key={i} className="space-y-2">
-                    <div className="text-sm font-semibold text-foreground">Example {i + 1}</div>
+                    <div className="text-sm font-medium text-foreground">Example {i + 1}</div>
                     <div className="grid gap-2 sm:grid-cols-2">
                       <Block label="Input">{sample.input}</Block>
                       <Block label="Output">{sample.output}</Block>
@@ -468,7 +460,7 @@ export default function SolvePage() {
 
             {problem.constraints.length > 0 && (
               <div>
-                <div className="mb-2 text-sm font-semibold text-foreground">Constraints</div>
+                <div className="mb-2 text-sm font-medium text-foreground">Constraints</div>
                 <ul className="space-y-1">
                   {problem.constraints.map((c, i) => (
                     <li key={i} className="flex gap-2 font-mono text-[13px] text-foreground/90">
@@ -483,7 +475,7 @@ export default function SolvePage() {
         )}
 
         {leftTab === "submissions" && (
-          <div className="p-3">
+          <div className="px-3 py-3">
             {history === null ? (
               <div className="p-4 font-mono text-sm text-muted-foreground">loading…</div>
             ) : history.length === 0 ? (
@@ -491,7 +483,7 @@ export default function SolvePage() {
                 {getStoredToken() ? "You have not submitted a solution to this problem yet." : "Log in to see your submissions."}
               </div>
             ) : (
-              <div className="overflow-hidden rounded-md border border-border">
+              <div>
                 {history.map((s) => (
                   <button
                     key={s.id}
@@ -505,7 +497,7 @@ export default function SolvePage() {
                       setCode(s.code)
                     }}
                     title="Load this code into the editor"
-                    className="grid w-full grid-cols-[4rem_1fr_auto] items-center gap-3 border-b border-border px-3 py-2 text-left text-sm last:border-0 hover:bg-muted/50"
+                    className="grid w-full grid-cols-[4rem_1fr_auto] items-center gap-3 border-b border-border px-3 py-2.5 text-left text-sm"
                   >
                     <VerdictBadge verdict={verdictOf(s)} short />
                     <span className="tabular truncate font-mono text-xs text-muted-foreground">
@@ -520,17 +512,17 @@ export default function SolvePage() {
         )}
 
         {leftTab === "hints" && (
-          <div className="space-y-4 p-5">
+          <div className="space-y-4 px-6 py-6">
             <p className="text-sm text-muted-foreground">
               Hints are generated for this problem and point at an approach without giving the solution away.
             </p>
             <Button size="sm" variant="outline" onClick={requestHint} disabled={hintLoading || problem.offline}>
-              {hintLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lightbulb className="mr-2 h-4 w-4" />}
+              {hintLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {hint ? "Get another hint" : "Get a hint"}
             </Button>
             {problem.offline && <p className="text-xs text-muted-foreground">Hints need the judge server.</p>}
             {hint && (
-              <div className="whitespace-pre-wrap rounded-md border border-border bg-muted/40 p-4 text-sm leading-relaxed text-foreground">
+              <div className="whitespace-pre-wrap rounded-md bg-muted/60 p-4 text-sm leading-relaxed text-foreground">
                 {hint}
               </div>
             )}
@@ -542,7 +534,7 @@ export default function SolvePage() {
 
   const consolePane = (
     <div className="flex h-full flex-col bg-background">
-      <div className="flex flex-shrink-0 items-center border-b border-border px-1">
+      <div className="flex flex-shrink-0 items-center px-3">
         <TabButton active={consoleTab === "input"} onClick={() => setConsoleTab("input")}>
           Input
         </TabButton>
@@ -551,14 +543,14 @@ export default function SolvePage() {
         </TabButton>
         <TabButton active={consoleTab === "result"} onClick={() => setConsoleTab("result")}>
           Result
-          {submitResult && <span className={cn("ml-1.5 font-mono text-xs", VERDICT_TEXT[submitResult.verdict])}>{submitResult.verdict}</span>}
+          {submitResult && <span className={cn("ml-1.5 text-xs", VERDICT_TEXT[submitResult.verdict])}>●</span>}
         </TabButton>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="flex-1 overflow-y-auto px-6 pb-4 pt-1">
         {consoleTab === "input" && (
           <div className="flex h-full flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-4">
               {problem.samples.map((sample, i) => (
                 <button
                   key={i}
@@ -567,18 +559,14 @@ export default function SolvePage() {
                     setActiveSample(i)
                   }}
                   className={cn(
-                    "h-7 rounded border px-2 font-mono text-xs",
-                    activeSample === i
-                      ? "border-primary/50 bg-primary/10 text-primary"
-                      : "border-border text-muted-foreground hover:text-foreground",
+                    "text-xs",
+                    activeSample === i ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  sample {i + 1}
+                  Sample {i + 1}
                 </button>
               ))}
-              <span className="font-mono text-xs text-muted-foreground">
-                {activeSample === null ? "custom input" : "stdin"}
-              </span>
+              {activeSample === null && problem.samples.length > 0 && <span className="text-xs text-foreground">Custom</span>}
             </div>
             <textarea
               value={stdin}
@@ -588,7 +576,7 @@ export default function SolvePage() {
               }}
               spellCheck={false}
               placeholder="Standard input for Run"
-              className="min-h-[80px] flex-1 resize-none rounded-md border border-border bg-muted/40 p-3 font-mono text-[13px] text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none"
+              className="min-h-[80px] flex-1 resize-none rounded-md bg-muted/60 p-3 font-mono text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none"
             />
           </div>
         )}
@@ -640,7 +628,7 @@ export default function SolvePage() {
               </div>
             ) : notice === "login" ? (
               <div className="text-sm text-foreground">
-                <Link href="/login" className="text-primary underline underline-offset-4">
+                <Link href="/login" className="underline underline-offset-4">
                   Log in
                 </Link>{" "}
                 to submit. Your code is saved in this browser.
@@ -652,7 +640,7 @@ export default function SolvePage() {
             ) : (
               <>
                 <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
-                  <span className={cn("text-xl font-semibold", VERDICT_TEXT[submitResult.verdict])}>
+                  <span className={cn("text-base font-medium", VERDICT_TEXT[submitResult.verdict])}>
                     {VERDICTS[submitResult.verdict]?.label}
                   </span>
                   <span className="tabular font-mono text-sm text-muted-foreground">
@@ -669,13 +657,13 @@ export default function SolvePage() {
                 </div>
 
                 {submitResult.testResults.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1">
                     {submitResult.testResults.map((t) => (
                       <span
                         key={t.testCase}
                         title={`Test ${t.testCase}: ${VERDICTS[t.verdict]?.label} · ${formatTime(t.executionTime)}`}
                         className={cn(
-                          "tabular flex h-7 min-w-[2.75rem] items-center justify-center rounded border px-1.5 font-mono text-xs",
+                          "tabular font-mono text-xs",
                           VERDICTS[t.verdict]?.className,
                         )}
                       >
@@ -711,11 +699,11 @@ export default function SolvePage() {
                 {submitResult.verdict !== "AC" && (
                   <div className="space-y-2">
                     <Button size="sm" variant="outline" onClick={requestReview} disabled={reviewLoading}>
-                      {reviewLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bug className="mr-2 h-4 w-4" />}
+                      {reviewLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Ask AI what is wrong
                     </Button>
                     {review && (
-                      <div className="whitespace-pre-wrap rounded-md border border-border bg-muted/40 p-3 text-sm leading-relaxed text-foreground">
+                      <div className="whitespace-pre-wrap rounded-md bg-muted/60 p-3 text-sm leading-relaxed text-foreground">
                         {review}
                       </div>
                     )}
@@ -731,16 +719,6 @@ export default function SolvePage() {
 
   const editorPane = (
     <div className="flex h-full flex-col bg-editor">
-      <div className="flex h-9 flex-shrink-0 items-center justify-between border-b border-border bg-background px-3">
-        <span className="font-mono text-xs text-muted-foreground">{lang.file}</span>
-        <button
-          onClick={handleReset}
-          className="flex items-center gap-1 font-mono text-xs text-muted-foreground hover:text-foreground"
-          title="Reset to the starter template"
-        >
-          <RotateCcw className="h-3 w-3" /> reset
-        </button>
-      </div>
       <div className="min-h-0 flex-1">
         <CodeEditorPane value={code} onChange={updateCode} language={lang.monaco} />
       </div>
@@ -754,7 +732,7 @@ export default function SolvePage() {
         <Header />
         <div className="flex h-[calc(100vh-3rem)] flex-col">
           {/* Workspace bar */}
-          <div className="flex h-11 flex-shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-3">
+          <div className="flex h-11 flex-shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-4">
             <div className="hidden min-w-0 items-center gap-1.5 text-sm sm:flex">
               <Link href="/practice" className="text-muted-foreground hover:text-foreground">
                 Problems
@@ -764,23 +742,33 @@ export default function SolvePage() {
             </div>
             <div className="ml-auto flex flex-shrink-0 items-center gap-2">
               <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger className="h-8 w-[132px] font-mono text-xs">
+                <SelectTrigger className="h-8 w-[120px] border-0 bg-transparent text-xs text-muted-foreground shadow-none">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {LANGUAGES.map((l) => (
-                    <SelectItem key={l.id} value={l.id} className="font-mono text-xs">
+                    <SelectItem key={l.id} value={l.id} className="text-xs">
                       {l.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="sm" className="h-8" onClick={handleRun} disabled={isRunning || isSubmitting}>
-                {isRunning ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Play className="mr-1.5 h-4 w-4" />}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground"
+                onClick={handleReset}
+                aria-label="Reset code"
+                title="Reset to the starter template"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8" onClick={handleRun} disabled={isRunning || isSubmitting}>
+                {isRunning && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                 Run
               </Button>
               <Button size="sm" className="h-8" onClick={handleSubmit} disabled={isRunning || isSubmitting}>
-                {isSubmitting ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Send className="mr-1.5 h-4 w-4" />}
+                {isSubmitting && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                 Submit
               </Button>
             </div>
@@ -791,13 +779,13 @@ export default function SolvePage() {
               <ResizablePanel defaultSize={isMobile ? 35 : 42} minSize={20}>
                 {statement}
               </ResizablePanel>
-              <ResizableHandle withHandle />
+              <ResizableHandle />
               <ResizablePanel defaultSize={isMobile ? 65 : 58} minSize={30}>
                 <ResizablePanelGroup direction="vertical">
                   <ResizablePanel defaultSize={62} minSize={20}>
                     {editorPane}
                   </ResizablePanel>
-                  <ResizableHandle withHandle />
+                  <ResizableHandle />
                   <ResizablePanel defaultSize={38} minSize={15}>
                     {consolePane}
                   </ResizablePanel>

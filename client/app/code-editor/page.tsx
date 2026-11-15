@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { Download, Loader2, Play, RotateCcw } from "lucide-react"
+import { Download, Loader2, RotateCcw } from "lucide-react"
 import { runCustom } from "@/lib/api"
 import { CodeEditorPane, VerdictBadge } from "@/components/judge-ui"
 import { LANGUAGES, VERDICTS, formatMemory, formatTime, getLanguage, type Verdict } from "@/lib/judge"
@@ -152,19 +152,18 @@ export default function CodeEditorPage() {
       <SidebarInset className="min-w-0">
         <Header />
         <div className="flex h-[calc(100vh-3rem)] flex-col">
-          <div className="flex h-11 flex-shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-3">
+          <div className="flex h-11 flex-shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-4">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="font-mono text-xs text-primary">~/playground</span>
-              <span className="hidden truncate font-mono text-xs text-muted-foreground sm:inline">/ {lang.file}</span>
+              <span className="text-sm font-medium text-foreground">Playground</span>
             </div>
             <div className="flex flex-shrink-0 items-center gap-2">
               <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger className="h-8 w-[132px] font-mono text-xs">
+                <SelectTrigger className="h-8 w-[120px] border-0 bg-transparent text-xs text-muted-foreground shadow-none">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {LANGUAGES.map((l) => (
-                    <SelectItem key={l.id} value={l.id} className="font-mono text-xs">
+                    <SelectItem key={l.id} value={l.id} className="text-xs">
                       {l.label}
                     </SelectItem>
                   ))}
@@ -177,7 +176,7 @@ export default function CodeEditorPage() {
                 <Download className="h-4 w-4" />
               </Button>
               <Button size="sm" className="h-8" onClick={run} disabled={loading}>
-                {loading ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Play className="mr-1.5 h-4 w-4" />}
+                {loading && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                 Run
               </Button>
             </div>
@@ -190,28 +189,28 @@ export default function CodeEditorPage() {
                   <CodeEditorPane value={code} onChange={updateCode} language={lang.monaco} />
                 </div>
               </ResizablePanel>
-              <ResizableHandle withHandle />
+              <ResizableHandle />
               <ResizablePanel defaultSize={38} minSize={20}>
                 <ResizablePanelGroup direction="vertical">
                   <ResizablePanel defaultSize={35} minSize={15}>
                     <div className="flex h-full flex-col bg-background">
-                      <div className="flex h-9 flex-shrink-0 items-center border-b border-border px-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                        stdin
+                      <div className="flex h-9 flex-shrink-0 items-center px-4 text-xs text-muted-foreground">
+                        Input
                       </div>
                       <textarea
                         value={inputs}
                         onChange={(e) => setInputs(e.target.value)}
                         spellCheck={false}
                         placeholder="Input passed to your program"
-                        className="min-h-0 flex-1 resize-none bg-transparent p-3 font-mono text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none"
+                        className="min-h-0 flex-1 resize-none bg-transparent px-4 py-1 font-mono text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none"
                       />
                     </div>
                   </ResizablePanel>
-                  <ResizableHandle withHandle />
+                  <ResizableHandle />
                   <ResizablePanel defaultSize={65} minSize={20}>
                     <div className="flex h-full flex-col bg-background">
-                      <div className="flex h-9 flex-shrink-0 items-center justify-between border-b border-border px-3">
-                        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">output</span>
+                      <div className="flex h-9 flex-shrink-0 items-center justify-between px-4">
+                        <span className="text-xs text-muted-foreground">Output</span>
                         {result && !loading && (
                           <span className="tabular flex items-center gap-3 font-mono text-xs text-muted-foreground">
                             {result.status in VERDICTS && <VerdictBadge verdict={result.status as Verdict} short />}
@@ -220,14 +219,14 @@ export default function CodeEditorPage() {
                           </span>
                         )}
                       </div>
-                      <div className="min-h-0 flex-1 overflow-auto p-3 font-mono text-[13px] leading-relaxed">
+                      <div className="min-h-0 flex-1 overflow-auto px-4 py-1 font-mono text-[13px] leading-relaxed">
                         {loading ? (
                           <span className="flex items-center text-muted-foreground">
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> running…
                           </span>
                         ) : !result ? (
                           <span className="text-muted-foreground">
-                            Press Run or Ctrl+Enter. Programs get 3 s and 256 MB.
+                            Run with Ctrl+Enter.
                           </span>
                         ) : (
                           <>

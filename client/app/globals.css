@@ -5,40 +5,40 @@
 /*
  * CodeArena design tokens.
  *
- * Neutral, low-chroma surfaces with one green accent, the way a judge or an
- * editor looks: flat panels, 1px borders, tight radii, monospace for anything
- * that is code, a number or a verdict. Dark is the default theme.
+ * Minimal and monochrome: neutral greys, hairline borders, no shadows. The
+ * primary colour is simply the foreground, so buttons and links stay black or
+ * white. Colour is reserved for meaning: verdicts and difficulty.
  */
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 22% 12%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
     --card: 0 0% 100%;
-    --card-foreground: 220 22% 12%;
+    --card-foreground: 0 0% 9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 22% 12%;
-    --primary: 145 68% 31%;
+    --popover-foreground: 0 0% 9%;
+    --primary: 0 0% 9%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 214 16% 93%;
-    --secondary-foreground: 220 22% 16%;
-    --muted: 214 16% 94%;
-    --muted-foreground: 216 10% 38%;
-    --accent: 205 78% 38%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 42%;
+    --accent: 0 0% 38%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 70% 46%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 15% 87%;
-    --input: 214 15% 84%;
-    --ring: 145 68% 31%;
-    --radius: 0.5rem;
-    --chart-1: 145 68% 31%;
-    --chart-2: 205 78% 38%;
-    --chart-3: 36 90% 42%;
-    --chart-4: 265 55% 52%;
-    --chart-5: 0 70% 46%;
+    --border: 0 0% 91%;
+    --input: 0 0% 86%;
+    --ring: 0 0% 45%;
+    --radius: 0.375rem;
+    --chart-1: 0 0% 20%;
+    --chart-2: 0 0% 40%;
+    --chart-3: 0 0% 55%;
+    --chart-4: 0 0% 70%;
+    --chart-5: 0 0% 82%;
 
     /* Difficulty and verdict colours */
-    --easy: 168 76% 28%;
+    --easy: 160 70% 28%;
     --medium: 34 92% 36%;
     --hard: 0 70% 46%;
     --verdict-ac: 145 68% 31%;
@@ -46,56 +46,56 @@
     --verdict-tle: 34 92% 36%;
     --verdict-mle: 265 55% 48%;
     --verdict-re: 18 85% 42%;
-    --verdict-ce: 216 10% 38%;
+    --verdict-ce: 0 0% 42%;
 
     /* Editor / console surface */
     --editor: 0 0% 100%;
-    --editor-foreground: 220 22% 12%;
+    --editor-foreground: 0 0% 9%;
 
-    --sidebar-background: 210 20% 96.5%;
-    --sidebar-foreground: 220 22% 16%;
-    --sidebar-primary: 145 68% 31%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 32%;
+    --sidebar-primary: 0 0% 9%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 214 16% 91%;
-    --sidebar-accent-foreground: 220 22% 12%;
-    --sidebar-border: 214 15% 87%;
-    --sidebar-ring: 145 68% 31%;
+    --sidebar-accent: 0 0% 95.5%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 91%;
+    --sidebar-ring: 0 0% 45%;
 
-    --sidebar-width: 15rem;
-    --sidebar-width-mobile: 14rem;
-    --sidebar-width-tablet: 14rem;
-    --sidebar-width-desktop: 15rem;
-    --sidebar-width-large: 15rem;
+    --sidebar-width: 13.5rem;
+    --sidebar-width-mobile: 13.5rem;
+    --sidebar-width-tablet: 13.5rem;
+    --sidebar-width-desktop: 13.5rem;
+    --sidebar-width-large: 13.5rem;
     --sidebar-width-icon: 4rem;
   }
 
   .dark {
-    --background: 220 14% 7%;
-    --foreground: 210 17% 91%;
-    --card: 220 13% 9.5%;
-    --card-foreground: 210 17% 91%;
-    --popover: 220 13% 11%;
-    --popover-foreground: 210 17% 91%;
-    --primary: 142 62% 50%;
-    --primary-foreground: 144 70% 6%;
-    --secondary: 220 10% 15%;
-    --secondary-foreground: 210 17% 91%;
-    --muted: 220 10% 14%;
-    --muted-foreground: 217 10% 62%;
-    --accent: 199 84% 60%;
-    --accent-foreground: 205 80% 8%;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 93%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 93%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 93%;
+    --primary: 0 0% 95%;
+    --primary-foreground: 0 0% 6%;
+    --secondary: 0 0% 11%;
+    --secondary-foreground: 0 0% 93%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 0% 72%;
+    --accent-foreground: 0 0% 6%;
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 9% 18%;
-    --input: 220 9% 22%;
-    --ring: 142 62% 50%;
-    --chart-1: 142 62% 50%;
-    --chart-2: 199 84% 60%;
-    --chart-3: 38 92% 56%;
-    --chart-4: 265 80% 72%;
-    --chart-5: 0 80% 66%;
+    --border: 0 0% 13%;
+    --input: 0 0% 18%;
+    --ring: 0 0% 55%;
+    --chart-1: 0 0% 90%;
+    --chart-2: 0 0% 70%;
+    --chart-3: 0 0% 52%;
+    --chart-4: 0 0% 38%;
+    --chart-5: 0 0% 26%;
 
-    --easy: 168 70% 48%;
+    --easy: 160 60% 48%;
     --medium: 38 92% 56%;
     --hard: 0 80% 66%;
     --verdict-ac: 142 62% 50%;
@@ -103,19 +103,19 @@
     --verdict-tle: 38 92% 56%;
     --verdict-mle: 265 80% 74%;
     --verdict-re: 20 90% 62%;
-    --verdict-ce: 217 10% 66%;
+    --verdict-ce: 0 0% 62%;
 
-    --editor: 220 14% 5.5%;
-    --editor-foreground: 210 17% 88%;
+    --editor: 0 0% 5%;
+    --editor-foreground: 0 0% 90%;
 
-    --sidebar-background: 220 14% 8.5%;
-    --sidebar-foreground: 210 14% 80%;
-    --sidebar-primary: 142 62% 50%;
-    --sidebar-primary-foreground: 144 70% 6%;
-    --sidebar-accent: 220 10% 14%;
-    --sidebar-accent-foreground: 210 17% 95%;
-    --sidebar-border: 220 9% 16%;
-    --sidebar-ring: 142 62% 50%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 62%;
+    --sidebar-primary: 0 0% 95%;
+    --sidebar-primary-foreground: 0 0% 6%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 13%;
+    --sidebar-ring: 0 0% 55%;
   }
 }
 
@@ -134,15 +134,15 @@
     @apply font-mono;
   }
   ::selection {
-    background: hsl(var(--primary) / 0.28);
+    background: hsl(var(--foreground) / 0.16);
   }
 }
 
 /* Responsive Sidebar Widths */
 @media (max-width: 640px) {
   :root {
-    --sidebar-width: 14rem; /* 224px on mobile */
-    --sidebar-width-mobile: 14rem;
+    --sidebar-width: 13.5rem;
+    --sidebar-width-mobile: 13.5rem;
   }
 
   .container {
@@ -164,8 +164,8 @@
 
 @media (min-width: 641px) and (max-width: 768px) {
   :root {
-    --sidebar-width: 14rem; /* 224px on tablet */
-    --sidebar-width-tablet: 14rem;
+    --sidebar-width: 13.5rem;
+    --sidebar-width-tablet: 13.5rem;
   }
 
   [data-sidebar="sidebar"] {
@@ -175,8 +175,8 @@
 
 @media (min-width: 769px) and (max-width: 1024px) {
   :root {
-    --sidebar-width: 15rem;
-    --sidebar-width-desktop: 15rem;
+    --sidebar-width: 13.5rem;
+    --sidebar-width-desktop: 13.5rem;
   }
 
   [data-sidebar="sidebar"] {
@@ -186,14 +186,14 @@
 
 @media (min-width: 1025px) and (max-width: 1440px) {
   :root {
-    --sidebar-width: 15rem;
+    --sidebar-width: 13.5rem;
   }
 }
 
 @media (min-width: 1441px) {
   :root {
-    --sidebar-width: 15rem;
-    --sidebar-width-large: 15rem;
+    --sidebar-width: 13.5rem;
+    --sidebar-width-large: 13.5rem;
   }
 
   [data-sidebar="sidebar"] {
@@ -334,7 +334,7 @@
 }
 
 .feature-card:hover {
-  border-color: hsl(var(--primary) / 0.45);
+  border-color: hsl(var(--foreground) / 0.25);
 }
 
 .gradient-purple,
@@ -395,12 +395,6 @@
 
 .btn-primary:hover {
   filter: brightness(1.08);
-}
-
-/* Faint dot grid used behind hero sections */
-.bg-grid {
-  background-image: radial-gradient(hsl(var(--foreground) / 0.07) 1px, transparent 1px);
-  background-size: 22px 22px;
 }
 
 @media (max-width: 768px) {
