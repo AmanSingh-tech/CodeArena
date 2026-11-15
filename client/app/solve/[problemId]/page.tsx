@@ -1,734 +1,811 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import { useParams } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarInset } from "@/components/ui/sidebar"
 import { Header } from "@/components/header"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
-import CodeEditor from "@/components/code-editor"
-import { 
-  Loader2, 
-  Play, 
-  RotateCcw, 
-  Clock, 
-  MemoryStick, 
-  CheckCircle, 
-  AlertTriangle, 
-  Lightbulb,
-  Trophy,
-  Users,
-  Building,
-  Code,
-  Terminal,
-  Bug,
-  Send,
-  ThumbsUp,
-  ThumbsDown,
-  Star,
-  Share2,
-  BookOpen,
-  Zap,
-  Target,
-  Brain
-} from "lucide-react"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { Loader2, Play, RotateCcw, Send, ChevronRight, Lightbulb, Bug, Clock, MemoryStick, WifiOff } from "lucide-react"
+import {
+  findError,
+  getHint,
+  getProblem,
+  getProblemSubmissions,
+  getStoredToken,
+  runCustom,
+  submitCode,
+} from "@/lib/api"
+import { getProblemById } from "@/lib/problems-data"
+import { CodeEditorPane, DifficultyLabel, VerdictBadge } from "@/components/judge-ui"
+import {
+  LANGUAGES,
+  VERDICTS,
+  VERDICT_TEXT,
+  formatMemory,
+  formatTime,
+  getLanguage,
+  verdictOf,
+  type Verdict,
+} from "@/lib/judge"
+import { cn } from "@/lib/utils"
 
-interface Problem {
-  id: string
-  title: string
-  difficulty: "Easy" | "Medium" | "Hard"
-  category: string
-  description: string
-  examples: Array<{
-    input: string
-    output: string
-    explanation?: string
-  }>
-  constraints: string[]
-  timeLimit: string
-  memoryLimit: string
-  hints: string[]
-  acceptance: string
-  submissions: string
-  companies: string[]
-  tags: string[]
+interface Sample {
+  input: string
+  output: string
+  explanation?: string
 }
 
-// Static problems data to avoid import issues
-const staticProblems: Problem[] = [
-  {
-    id: "two-sum",
-    title: "Two Sum",
-    difficulty: "Easy",
-    category: "Array",
-    description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+interface ProblemView {
+  id: string
+  title: string
+  difficulty: string
+  description: string
+  constraints: string[]
+  tags: string[]
+  samples: Sample[]
+  // True when the statement comes from the bundled sample set, not the judge.
+  offline: boolean
+}
 
-You may assume that each input would have exactly one solution, and you may not use the same element twice.
+interface RunResult {
+  status: string
+  output: string
+  stderr: string
+  timeMs: number | null
+  memoryKb: number | null
+  expected?: string
+}
 
-You can return the answer in any order.`,
-    examples: [
-      {
-        input: "nums = [2,7,11,15], target = 9",
-        output: "[0,1]",
-        explanation: "Because nums[0] + nums[1] == 9, we return [0, 1]."
-      },
-      {
-        input: "nums = [3,2,4], target = 6",
-        output: "[1,2]"
-      },
-      {
-        input: "nums = [3,3], target = 6",
-        output: "[0,1]"
-      }
-    ],
-    constraints: [
-      "2 <= nums.length <= 10^4",
-      "-10^9 <= nums[i] <= 10^9",
-      "-10^9 <= target <= 10^9",
-      "Only one valid answer exists."
-    ],
-    timeLimit: "1 second",
-    memoryLimit: "256 MB",
-    hints: [
-      "A really brute force way would be to search for all possible pairs of numbers but that would be too slow.",
-      "Again, the best way to approach this problem is to think about what we need and whether we can trade space for time.",
-      "What if we could look up each complement in constant time?"
-    ],
-    acceptance: "47.3%",
-    submissions: "17.2M",
-    companies: ["Amazon", "Google", "Microsoft", "Facebook", "Apple"],
-    tags: ["Array", "Hash Table"]
-  },
-  {
-    id: "reverse-string",
-    title: "Reverse String",
-    difficulty: "Easy",
-    category: "Two Pointers",
-    description: `Write a function that reverses a string. The input string is given as an array of characters s.
+interface TestResult {
+  testCase: number
+  passed: boolean
+  verdict: Verdict
+  executionTime: number
+  memoryKb: number
+  input?: string
+  expected?: string
+  actual?: string
+  error?: string
+}
 
-You must do this by modifying the input array in-place with O(1) extra memory.`,
-    examples: [
-      {
-        input: 's = ["h","e","l","l","o"]',
-        output: '["o","l","l","e","h"]'
-      },
-      {
-        input: 's = ["H","a","n","n","a","h"]',
-        output: '["h","a","n","n","a","H"]'
-      }
-    ],
-    constraints: [
-      "1 <= s.length <= 10^5",
-      "s[i] is a printable ascii character."
-    ],
-    timeLimit: "1 second",
-    memoryLimit: "256 MB",
-    hints: [
-      "The entire logic for reversing a string is based on using the opposite directional two-pointer approach!"
-    ],
-    acceptance: "74.9%",
-    submissions: "2.1M",
-    companies: ["Microsoft", "Amazon", "Apple"],
-    tags: ["Two Pointers", "String"]
-  },
-  {
-    id: "maximum-subarray",
-    title: "Maximum Subarray",
-    difficulty: "Medium",
-    category: "Dynamic Programming",
-    description: `Given an integer array nums, find the subarray with the largest sum, and return its sum.`,
-    examples: [
-      {
-        input: "nums = [-2,1,-3,4,-1,2,1,-5,4]",
-        output: "6",
-        explanation: "The subarray [4,-1,2,1] has the largest sum 6."
-      },
-      {
-        input: "nums = [1]",
-        output: "1",
-        explanation: "The subarray [1] has the largest sum 1."
-      },
-      {
-        input: "nums = [5,4,-1,7,8]",
-        output: "23",
-        explanation: "The subarray [5,4,-1,7,8] has the largest sum 23."
-      }
-    ],
-    constraints: [
-      "1 <= nums.length <= 10^5",
-      "-10^4 <= nums[i] <= 10^4"
-    ],
-    timeLimit: "1 second",
-    memoryLimit: "256 MB",
-    hints: [
-      "Try to solve this problem using Kadane's algorithm.",
-      "If you're having trouble with the algorithm, try to think about when you would want to start a new subarray."
-    ],
-    acceptance: "49.9%",
-    submissions: "3.4M",
-    companies: ["Microsoft", "Amazon", "Apple", "Facebook", "Google"],
-    tags: ["Array", "Divide and Conquer", "Dynamic Programming"]
-  },
-  {
-    id: "valid-parentheses",
-    title: "Valid Parentheses",
-    difficulty: "Easy",
-    category: "Stack",
-    description: `Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+interface SubmitResult {
+  verdict: Verdict
+  passedTests: number
+  totalTests: number
+  executionTime: number
+  memoryKb: number
+  compileError: string | null
+  testResults: TestResult[]
+}
 
-An input string is valid if:
-1. Open brackets must be closed by the same type of brackets.
-2. Open brackets must be closed in the correct order.
-3. Every close bracket has a corresponding open bracket of the same type.`,
-    examples: [
-      {
-        input: 's = "()"',
-        output: "true"
-      },
-      {
-        input: 's = "()[]{}"',
-        output: "true"
-      },
-      {
-        input: 's = "(]"',
-        output: "false"
-      }
-    ],
-    constraints: [
-      "1 <= s.length <= 10^4",
-      "s consists of parentheses only '()[]{}'."
-    ],
-    timeLimit: "1 second",
-    memoryLimit: "256 MB",
-    hints: [
-      "An interesting property about a valid parenthesis expression is that a sub-expression of a valid expression should also be a valid expression.",
-      "What if whenever we encounter a matching pair of parenthesis in the expression, we simply remove it from the expression?",
-      "Use a stack of characters."
-    ],
-    acceptance: "40.7%",
-    submissions: "4.8M",
-    companies: ["Microsoft", "Amazon", "Facebook", "Google", "Bloomberg"],
-    tags: ["String", "Stack"]
-  },
-  {
-    id: "climbing-stairs",
-    title: "Climbing Stairs",
-    difficulty: "Easy",
-    category: "Dynamic Programming",
-    description: `You are climbing a staircase. It takes n steps to reach the top.
+interface PastSubmission {
+  id: string
+  code: string
+  date: string
+  success: boolean
+  error?: string | null
+  language: string
+  testsPassed: number | null
+  totalTests: number | null
+  executionTime: number | null
+}
 
-Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?`,
-    examples: [
-      {
-        input: "n = 2",
-        output: "2",
-        explanation: "There are two ways to climb to the top: 1. 1 step + 1 step, 2. 2 steps"
-      },
-      {
-        input: "n = 3",
-        output: "3",
-        explanation: "There are three ways to climb to the top: 1. 1 step + 1 step + 1 step, 2. 1 step + 2 steps, 3. 2 steps + 1 step"
-      }
-    ],
-    constraints: [
-      "1 <= n <= 45"
-    ],
-    timeLimit: "1 second",
-    memoryLimit: "256 MB",
-    hints: [
-      "To reach nth step, what could have been your previous steps? (Think about the step sizes)",
-      "You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
-      "Think dynamic programming. What's the relation between the number of ways to reach the (n-1)th step and (n-2)th step with the number of ways to reach the nth step?"
-    ],
-    acceptance: "52.1%",
-    submissions: "2.9M",
-    companies: ["Amazon", "Microsoft", "Apple", "Adobe"],
-    tags: ["Math", "Dynamic Programming", "Memoization"]
+type LeftTab = "statement" | "submissions" | "hints"
+type ConsoleTab = "input" | "output" | "result"
+
+const codeKey = (problemId: string, language: string) => `codearena:code:${problemId}:${language}`
+
+function fromApi(p: any): ProblemView {
+  return {
+    id: p.id,
+    title: p.title,
+    difficulty: p.difficulty,
+    description: p.description || "",
+    constraints: String(p.constraints || "")
+      .split(/\n|,\s+(?=[^,]*[≤<=>])/)
+      .map((c: string) => c.trim())
+      .filter(Boolean),
+    tags: p.tags?.map((t: any) => t.tag?.tagName).filter(Boolean) || [],
+    samples: (p.testCases || []).map((t: any) => ({ input: t.input, output: t.output })),
+    offline: false,
   }
-]
+}
 
-function getProblemById(id: string): Problem | null {
-  return staticProblems.find(problem => problem.id === id) || null
+function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "relative h-9 px-3 text-sm transition-colors",
+        active
+          ? "font-medium text-foreground after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-primary"
+          : "text-muted-foreground hover:text-foreground",
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
+function Block({ label, children, tone }: { label: string; children: React.ReactNode; tone?: string }) {
+  return (
+    <div>
+      <div className="mb-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <pre className={cn("overflow-x-auto whitespace-pre-wrap break-words rounded-md border border-border bg-muted/40 px-3 py-2 font-mono text-[13px] leading-relaxed text-foreground", tone)}>
+        {children}
+      </pre>
+    </div>
+  )
 }
 
 export default function SolvePage() {
   const params = useParams()
   const problemId = params.problemId as string
-  const [problem, setProblem] = useState<Problem | null>(null)
+  const isMobile = useIsMobile()
+
+  const [problem, setProblem] = useState<ProblemView | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [showHints, setShowHints] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState("cpp")
-  const [code, setCode] = useState("")
+  const [notFound, setNotFound] = useState(false)
+
+  const [language, setLanguage] = useState("cpp")
+  const [code, setCode] = useState(getLanguage("cpp").template)
+  const [stdin, setStdin] = useState("")
+  const [activeSample, setActiveSample] = useState<number | null>(null)
+
+  const [leftTab, setLeftTab] = useState<LeftTab>("statement")
+  const [consoleTab, setConsoleTab] = useState<ConsoleTab>("input")
+
   const [isRunning, setIsRunning] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [testResults, setTestResults] = useState<any[]>([])
-  const [activeTab, setActiveTab] = useState("description")
-  const [isLiked, setIsLiked] = useState(false)
-  const [isDisliked, setIsDisliked] = useState(false)
-  const [isFavorited, setIsFavorited] = useState(false)
+  const [runResult, setRunResult] = useState<RunResult | null>(null)
+  const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
 
+  const [history, setHistory] = useState<PastSubmission[] | null>(null)
+  const [hint, setHint] = useState<string | null>(null)
+  const [hintLoading, setHintLoading] = useState(false)
+  const [review, setReview] = useState<string | null>(null)
+  const [reviewLoading, setReviewLoading] = useState(false)
+
+  // Load the problem from the judge, falling back to the bundled sample set.
   useEffect(() => {
-    loadProblem()
+    let cancelled = false
+    setLoading(true)
+    setNotFound(false)
+
+    const useBundled = () => {
+      const local = getProblemById(problemId)
+      if (!local) return false
+      setProblem({
+        id: local.id,
+        title: local.title,
+        difficulty: local.difficulty,
+        description: local.description,
+        constraints: local.constraints,
+        tags: local.tags,
+        samples: local.examples,
+        offline: true,
+      })
+      return true
+    }
+
+    getProblem(problemId)
+      .then((response) => {
+        if (cancelled) return
+        if (response.success && response.problem) {
+          const view = fromApi(response.problem)
+          setProblem(view)
+          if (view.samples[0]) {
+            setStdin(view.samples[0].input)
+            setActiveSample(0)
+          }
+        } else if (!useBundled()) {
+          setNotFound(true)
+        }
+      })
+      .catch(() => {
+        if (!cancelled && !useBundled()) setNotFound(true)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [problemId])
 
+  // Restore the saved draft for this problem and language, or start from the template.
   useEffect(() => {
-    if (problem) {
-      setCode(getLanguageTemplate(selectedLanguage, problem))
-    }
-  }, [problem, selectedLanguage])
-
-  const loadProblem = () => {
+    let saved: string | null = null
     try {
-      const foundProblem = getProblemById(problemId)
-      if (foundProblem) {
-        setProblem(foundProblem)
-      } else {
-        setError("Problem not found.")
-      }
-    } catch (err: any) {
-      setError(err.message || "Unknown error")
-    } finally {
-      setLoading(false)
-    }
+      saved = localStorage.getItem(codeKey(problemId, language))
+    } catch {}
+    setCode(saved ?? getLanguage(language).template)
+  }, [problemId, language])
+
+  const updateCode = (next: string) => {
+    setCode(next)
+    try {
+      localStorage.setItem(codeKey(problemId, language), next)
+    } catch {}
   }
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "Easy":
-        return "text-green-500 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
-      case "Medium":
-        return "text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800"
-      case "Hard":
-        return "text-red-500 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
-      default:
-        return "text-gray-500 bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800"
+  const loadHistory = useCallback(async () => {
+    const token = getStoredToken()
+    if (!token || !problem || problem.offline) {
+      setHistory([])
+      return
     }
-  }
-
-  const getDifficultyIcon = (difficulty: string) => {
-    switch (difficulty) {
-      case "Easy":
-        return <Zap className="w-4 h-4" />
-      case "Medium":
-        return <Target className="w-4 h-4" />
-      case "Hard":
-        return <Brain className="w-4 h-4" />
-      default:
-        return <Code className="w-4 h-4" />
+    try {
+      const response = await getProblemSubmissions(problem.id, token)
+      setHistory(response.success ? response.submissions : [])
+    } catch {
+      setHistory([])
     }
-  }
+  }, [problem])
 
-  const getLanguageTemplate = (language: string, problem: Problem) => {
-    const templates = {
-      cpp: `#include <iostream>
-#include <vector>
-#include <algorithm>
-using namespace std;
+  useEffect(() => {
+    if (leftTab === "submissions") loadHistory()
+  }, [leftTab, loadHistory])
 
-class Solution {
-public:
-    // TODO: Implement your solution here
-    int twoSum(vector<int>& nums, int target) {
-        
-    }
-};
-
-int main() {
-    Solution solution;
-    // Test your solution here
-    vector<int> nums = {2, 7, 11, 15};
-    int target = 9;
-    
-    int result = solution.twoSum(nums, target);
-    cout << result << endl;
-    
-    return 0;
-}`,
-      python: `class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        # TODO: Implement your solution here
-        pass
-
-# Test your solution
-if __name__ == "__main__":
-    solution = Solution()
-    nums = [2, 7, 11, 15]
-    target = 9
-    
-    result = solution.twoSum(nums, target)
-    print(result)`,
-      javascript: `/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-var twoSum = function(nums, target) {
-    // TODO: Implement your solution here
-    
-};
-
-// Test your solution
-const nums = [2, 7, 11, 15];
-const target = 9;
-
-const result = twoSum(nums, target);
-console.log(result);`,
-      java: `class Solution {
-    public int[] twoSum(int[] nums, int target) {
-        // TODO: Implement your solution here
-        
-    }
-}
-
-public class Main {
-    public static void main(String[] args) {
-        Solution solution = new Solution();
-        int[] nums = {2, 7, 11, 15};
-        int target = 9;
-        
-        int[] result = solution.twoSum(nums, target);
-        System.out.println(Arrays.toString(result));
-    }
-}`
-    }
-    return templates[language as keyof typeof templates] || templates.cpp
-  }
-
-  const handleLanguageChange = (language: string) => {
-    setSelectedLanguage(language)
-    if (problem) {
-      setCode(getLanguageTemplate(language, problem))
-    }
-  }
-
-  const handleRunCode = async () => {
+  const handleRun = async () => {
+    if (!code.trim()) return
     setIsRunning(true)
-    // Simulate API call
-    setTimeout(() => {
-      setTestResults([
-        { id: 1, input: "[2,7,11,15], 9", expected: "[0,1]", actual: "[0,1]", status: "passed", time: "0ms", memory: "41.2MB" },
-        { id: 2, input: "[3,2,4], 6", expected: "[1,2]", actual: "[1,2]", status: "passed", time: "0ms", memory: "41.4MB" },
-        { id: 3, input: "[3,3], 6", expected: "[0,1]", actual: "[0,1]", status: "passed", time: "0ms", memory: "41.1MB" }
-      ])
+    setNotice(null)
+    setConsoleTab("output")
+    try {
+      const data = await runCustom({ code, language, inputs: stdin })
+      if (!data.success) {
+        setRunResult({ status: "ERR", output: "", stderr: data.error || data.err || "Run failed", timeMs: null, memoryKb: null })
+        return
+      }
+      const status = data.status || "OK"
+      const stderr = data.err && data.err !== "No Error" ? data.err : ""
+      setRunResult({
+        status,
+        output: status === "CE" ? "" : data.output || "",
+        stderr,
+        timeMs: data.executionTime ?? null,
+        memoryKb: data.memoryKb ?? null,
+        expected: activeSample !== null ? problem?.samples[activeSample]?.output : undefined,
+      })
+    } catch {
+      setRunResult({
+        status: "ERR",
+        output: "",
+        stderr: "Could not reach the judge. Check that the server is running.",
+        timeMs: null,
+        memoryKb: null,
+      })
+    } finally {
       setIsRunning(false)
-      setActiveTab("testcase")
-    }, 2000)
+    }
   }
 
   const handleSubmit = async () => {
+    if (!problem || !code.trim()) return
+    setNotice(null)
+    setReview(null)
+
+    if (problem.offline) {
+      setConsoleTab("result")
+      setSubmitResult(null)
+      setNotice("This is a bundled sample problem. Submitting needs the judge server, which is not reachable.")
+      return
+    }
+
+    const token = getStoredToken()
+    if (!token) {
+      setConsoleTab("result")
+      setSubmitResult(null)
+      setNotice("login")
+      return
+    }
+
     setIsSubmitting(true)
-    // Simulate submission
-    setTimeout(() => {
+    setConsoleTab("result")
+    try {
+      const data = await submitCode({ problemId: problem.id, code, language, token })
+      if (!data.success) {
+        setSubmitResult(null)
+        setNotice(data.msg || data.error || "Submission failed")
+        return
+      }
+      setSubmitResult({
+        verdict: data.verdict || (data.accepted ? "AC" : "WA"),
+        passedTests: data.results.passedTests,
+        totalTests: data.results.totalTests,
+        executionTime: data.results.executionTime,
+        memoryKb: data.results.memoryKb,
+        compileError: data.results.compileError,
+        testResults: data.results.testResults || [],
+      })
+      if (leftTab === "submissions") loadHistory()
+    } catch {
+      setSubmitResult(null)
+      setNotice("Could not reach the judge. Your submission was not recorded.")
+    } finally {
       setIsSubmitting(false)
-      setActiveTab("result")
-    }, 3000)
+    }
   }
+
+  const handleReset = () => {
+    updateCode(getLanguage(language).template)
+  }
+
+  const requestHint = async () => {
+    if (!problem) return
+    setHintLoading(true)
+    try {
+      const data = await getHint(problem.id)
+      setHint(data.success ? data.res : data.msg || "Could not get a hint right now.")
+    } catch {
+      setHint("Could not reach the server.")
+    } finally {
+      setHintLoading(false)
+    }
+  }
+
+  const requestReview = async () => {
+    if (!problem) return
+    setReviewLoading(true)
+    try {
+      const data = await findError(problem.id, code)
+      setReview(data.success ? data.res : data.msg || "Could not review the code right now.")
+    } catch {
+      setReview("Could not reach the server.")
+    } finally {
+      setReviewLoading(false)
+    }
+  }
+
+  const runMatches = useMemo(() => {
+    if (!runResult || runResult.expected === undefined || runResult.status !== "OK") return null
+    const norm = (s: string) => s.replace(/\r\n/g, "\n").split("\n").map((l) => l.trimEnd()).join("\n").trimEnd()
+    return norm(runResult.output) === norm(runResult.expected)
+  }, [runResult])
 
   if (loading) {
     return (
-      <div className="flex h-screen">
+      <>
         <AppSidebar />
-        <SidebarInset className="flex-1">
+        <SidebarInset>
           <Header />
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">Loading problem...</p>
-            </div>
+          <div className="flex h-[calc(100vh-3rem)] items-center justify-center font-mono text-sm text-muted-foreground">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> loading problem…
           </div>
         </SidebarInset>
-      </div>
+      </>
     )
   }
 
-  if (error || !problem) {
+  if (notFound || !problem) {
     return (
-      <div className="flex h-screen">
+      <>
         <AppSidebar />
-        <SidebarInset className="flex-1">
+        <SidebarInset>
           <Header />
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Problem Not Found</h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                {error || "The requested problem could not be found."}
-              </p>
-              <Button 
-                onClick={() => window.history.back()}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Go Back
-              </Button>
-            </div>
+          <div className="flex h-[calc(100vh-3rem)] flex-col items-center justify-center gap-3 text-center">
+            <div className="font-mono text-sm text-verdict-wa">404 · problem not found</div>
+            <p className="max-w-sm text-sm text-muted-foreground">
+              There is no problem with this id, or the judge server could not be reached.
+            </p>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/practice">Back to problems</Link>
+            </Button>
           </div>
         </SidebarInset>
-      </div>
+      </>
     )
   }
+
+  const lang = getLanguage(language)
+
+  const statement = (
+    <div className="flex h-full flex-col bg-background">
+      <div className="flex flex-shrink-0 items-center border-b border-border px-1">
+        <TabButton active={leftTab === "statement"} onClick={() => setLeftTab("statement")}>
+          Statement
+        </TabButton>
+        <TabButton active={leftTab === "submissions"} onClick={() => setLeftTab("submissions")}>
+          Submissions
+        </TabButton>
+        <TabButton active={leftTab === "hints"} onClick={() => setLeftTab("hints")}>
+          Hints
+        </TabButton>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        {leftTab === "statement" && (
+          <div className="space-y-6 p-5">
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">{problem.title}</h1>
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <DifficultyLabel difficulty={problem.difficulty} className="text-xs" />
+                <span className="flex items-center gap-1 font-mono">
+                  <Clock className="h-3.5 w-3.5" /> 3 s
+                </span>
+                <span className="flex items-center gap-1 font-mono">
+                  <MemoryStick className="h-3.5 w-3.5" /> 256 MB
+                </span>
+                {problem.tags.map((t) => (
+                  <span key={t} className="rounded border border-border px-1.5 py-0.5 font-mono text-[11px]">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {problem.offline && (
+              <div className="flex items-start gap-2 rounded-md border border-medium/30 bg-medium/10 px-3 py-2 text-sm">
+                <WifiOff className="mt-0.5 h-4 w-4 flex-shrink-0 text-medium" />
+                <span>Bundled sample problem. You can run code against your own input; submitting needs the judge server.</span>
+              </div>
+            )}
+
+            <div className="whitespace-pre-line text-[15px] leading-relaxed text-foreground/90">{problem.description}</div>
+
+            {problem.samples.length > 0 && (
+              <div className="space-y-4">
+                {problem.samples.map((sample, i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="text-sm font-semibold text-foreground">Example {i + 1}</div>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <Block label="Input">{sample.input}</Block>
+                      <Block label="Output">{sample.output}</Block>
+                    </div>
+                    {sample.explanation && <p className="text-sm text-muted-foreground">{sample.explanation}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {problem.constraints.length > 0 && (
+              <div>
+                <div className="mb-2 text-sm font-semibold text-foreground">Constraints</div>
+                <ul className="space-y-1">
+                  {problem.constraints.map((c, i) => (
+                    <li key={i} className="flex gap-2 font-mono text-[13px] text-foreground/90">
+                      <span className="text-muted-foreground">•</span>
+                      {c}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        {leftTab === "submissions" && (
+          <div className="p-3">
+            {history === null ? (
+              <div className="p-4 font-mono text-sm text-muted-foreground">loading…</div>
+            ) : history.length === 0 ? (
+              <div className="p-4 text-sm text-muted-foreground">
+                {getStoredToken() ? "You have not submitted a solution to this problem yet." : "Log in to see your submissions."}
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-md border border-border">
+                {history.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => {
+                      const id = getLanguage(s.language).id
+                      // Store it as the draft first so the language switch picks it up.
+                      try {
+                        localStorage.setItem(codeKey(problemId, id), s.code)
+                      } catch {}
+                      setLanguage(id)
+                      setCode(s.code)
+                    }}
+                    title="Load this code into the editor"
+                    className="grid w-full grid-cols-[4rem_1fr_auto] items-center gap-3 border-b border-border px-3 py-2 text-left text-sm last:border-0 hover:bg-muted/50"
+                  >
+                    <VerdictBadge verdict={verdictOf(s)} short />
+                    <span className="tabular truncate font-mono text-xs text-muted-foreground">
+                      {getLanguage(s.language).label} · {s.testsPassed ?? 0}/{s.totalTests ?? 0} · {formatTime(s.executionTime)}
+                    </span>
+                    <span className="font-mono text-xs text-muted-foreground">{new Date(s.date).toLocaleDateString()}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {leftTab === "hints" && (
+          <div className="space-y-4 p-5">
+            <p className="text-sm text-muted-foreground">
+              Hints are generated for this problem and point at an approach without giving the solution away.
+            </p>
+            <Button size="sm" variant="outline" onClick={requestHint} disabled={hintLoading || problem.offline}>
+              {hintLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lightbulb className="mr-2 h-4 w-4" />}
+              {hint ? "Get another hint" : "Get a hint"}
+            </Button>
+            {problem.offline && <p className="text-xs text-muted-foreground">Hints need the judge server.</p>}
+            {hint && (
+              <div className="whitespace-pre-wrap rounded-md border border-border bg-muted/40 p-4 text-sm leading-relaxed text-foreground">
+                {hint}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  const consolePane = (
+    <div className="flex h-full flex-col bg-background">
+      <div className="flex flex-shrink-0 items-center border-b border-border px-1">
+        <TabButton active={consoleTab === "input"} onClick={() => setConsoleTab("input")}>
+          Input
+        </TabButton>
+        <TabButton active={consoleTab === "output"} onClick={() => setConsoleTab("output")}>
+          Output
+        </TabButton>
+        <TabButton active={consoleTab === "result"} onClick={() => setConsoleTab("result")}>
+          Result
+          {submitResult && <span className={cn("ml-1.5 font-mono text-xs", VERDICT_TEXT[submitResult.verdict])}>{submitResult.verdict}</span>}
+        </TabButton>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-3">
+        {consoleTab === "input" && (
+          <div className="flex h-full flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {problem.samples.map((sample, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    setStdin(sample.input)
+                    setActiveSample(i)
+                  }}
+                  className={cn(
+                    "h-7 rounded border px-2 font-mono text-xs",
+                    activeSample === i
+                      ? "border-primary/50 bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  sample {i + 1}
+                </button>
+              ))}
+              <span className="font-mono text-xs text-muted-foreground">
+                {activeSample === null ? "custom input" : "stdin"}
+              </span>
+            </div>
+            <textarea
+              value={stdin}
+              onChange={(e) => {
+                setStdin(e.target.value)
+                setActiveSample(null)
+              }}
+              spellCheck={false}
+              placeholder="Standard input for Run"
+              className="min-h-[80px] flex-1 resize-none rounded-md border border-border bg-muted/40 p-3 font-mono text-[13px] text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none"
+            />
+          </div>
+        )}
+
+        {consoleTab === "output" && (
+          <div className="space-y-3">
+            {isRunning ? (
+              <div className="flex items-center font-mono text-sm text-muted-foreground">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> running…
+              </div>
+            ) : !runResult ? (
+              <div className="font-mono text-sm text-muted-foreground">Run your code to see its output here.</div>
+            ) : (
+              <>
+                <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
+                  {runResult.status === "OK" ? (
+                    runMatches === null ? (
+                      <span className="text-foreground">Finished</span>
+                    ) : runMatches ? (
+                      <span className="text-verdict-ac">Matches sample output</span>
+                    ) : (
+                      <span className="text-verdict-wa">Differs from sample output</span>
+                    )
+                  ) : runResult.status in VERDICTS ? (
+                    <VerdictBadge verdict={runResult.status as Verdict} />
+                  ) : (
+                    <span className="text-verdict-wa">Error</span>
+                  )}
+                  {runResult.timeMs !== null && <span className="tabular text-muted-foreground">{formatTime(runResult.timeMs)}</span>}
+                  {!!runResult.memoryKb && <span className="tabular text-muted-foreground">{formatMemory(runResult.memoryKb)}</span>}
+                </div>
+                {runResult.status !== "CE" && runResult.status !== "ERR" && <Block label="stdout">{runResult.output || "(no output)"}</Block>}
+                {runMatches === false && <Block label="expected">{runResult.expected}</Block>}
+                {runResult.stderr && (
+                  <Block label={runResult.status === "CE" ? "compiler" : "stderr"} tone="text-verdict-wa">
+                    {runResult.stderr}
+                  </Block>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {consoleTab === "result" && (
+          <div className="space-y-4">
+            {isSubmitting ? (
+              <div className="flex items-center font-mono text-sm text-muted-foreground">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> judging…
+              </div>
+            ) : notice === "login" ? (
+              <div className="text-sm text-foreground">
+                <Link href="/login" className="text-primary underline underline-offset-4">
+                  Log in
+                </Link>{" "}
+                to submit. Your code is saved in this browser.
+              </div>
+            ) : notice ? (
+              <div className="text-sm text-verdict-wa">{notice}</div>
+            ) : !submitResult ? (
+              <div className="font-mono text-sm text-muted-foreground">Submit to judge your code on every test case.</div>
+            ) : (
+              <>
+                <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+                  <span className={cn("text-xl font-semibold", VERDICT_TEXT[submitResult.verdict])}>
+                    {VERDICTS[submitResult.verdict]?.label}
+                  </span>
+                  <span className="tabular font-mono text-sm text-muted-foreground">
+                    {submitResult.passedTests}/{submitResult.totalTests} tests
+                  </span>
+                  {submitResult.verdict !== "CE" && (
+                    <>
+                      <span className="tabular font-mono text-sm text-muted-foreground">{formatTime(submitResult.executionTime)}</span>
+                      {!!submitResult.memoryKb && (
+                        <span className="tabular font-mono text-sm text-muted-foreground">{formatMemory(submitResult.memoryKb)}</span>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {submitResult.testResults.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {submitResult.testResults.map((t) => (
+                      <span
+                        key={t.testCase}
+                        title={`Test ${t.testCase}: ${VERDICTS[t.verdict]?.label} · ${formatTime(t.executionTime)}`}
+                        className={cn(
+                          "tabular flex h-7 min-w-[2.75rem] items-center justify-center rounded border px-1.5 font-mono text-xs",
+                          VERDICTS[t.verdict]?.className,
+                        )}
+                      >
+                        {t.testCase} {t.verdict}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {submitResult.compileError && (
+                  <Block label="compiler" tone="text-verdict-wa">
+                    {submitResult.compileError}
+                  </Block>
+                )}
+
+                {submitResult.testResults
+                  .filter((t) => !t.passed && t.input !== undefined)
+                  .slice(0, 1)
+                  .map((t) => (
+                    <div key={t.testCase} className="space-y-2">
+                      <div className="text-sm font-medium text-foreground">Test {t.testCase} (sample)</div>
+                      <div className="grid gap-2 sm:grid-cols-3">
+                        <Block label="Input">{t.input}</Block>
+                        <Block label="Expected">{t.expected}</Block>
+                        <Block label="Your output" tone="text-verdict-wa">
+                          {t.actual || "(no output)"}
+                        </Block>
+                      </div>
+                      {t.error && <Block label="stderr" tone="text-verdict-wa">{t.error}</Block>}
+                    </div>
+                  ))}
+
+                {submitResult.verdict !== "AC" && (
+                  <div className="space-y-2">
+                    <Button size="sm" variant="outline" onClick={requestReview} disabled={reviewLoading}>
+                      {reviewLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bug className="mr-2 h-4 w-4" />}
+                      Ask AI what is wrong
+                    </Button>
+                    {review && (
+                      <div className="whitespace-pre-wrap rounded-md border border-border bg-muted/40 p-3 text-sm leading-relaxed text-foreground">
+                        {review}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  const editorPane = (
+    <div className="flex h-full flex-col bg-editor">
+      <div className="flex h-9 flex-shrink-0 items-center justify-between border-b border-border bg-background px-3">
+        <span className="font-mono text-xs text-muted-foreground">{lang.file}</span>
+        <button
+          onClick={handleReset}
+          className="flex items-center gap-1 font-mono text-xs text-muted-foreground hover:text-foreground"
+          title="Reset to the starter template"
+        >
+          <RotateCcw className="h-3 w-3" /> reset
+        </button>
+      </div>
+      <div className="min-h-0 flex-1">
+        <CodeEditorPane value={code} onChange={updateCode} language={lang.monaco} />
+      </div>
+    </div>
+  )
 
   return (
     <>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <Header />
-        <main className="flex-1 bg-background">
-          <ResizablePanelGroup direction="horizontal" className="h-[calc(100vh-4rem)]">
-            {/* Problem Description Panel */}
-            <ResizablePanel defaultSize={45} minSize={30}>
-              <div className="h-full flex flex-col bg-white dark:bg-gray-900">
-                {/* Simple Problem Header */}
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center gap-3 mb-3">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {problem.title}
-                    </h1>
-                    <Badge className={`${getDifficultyColor(problem.difficulty)} font-semibold`}>
-                      {problem.difficulty}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                    <span>Acceptance: {problem.acceptance}</span>
-                    <span>Submissions: {problem.submissions}</span>
-                    <span>{problem.timeLimit}</span>
-                    <span>{problem.memoryLimit}</span>
-                  </div>
-                </div>
+        <div className="flex h-[calc(100vh-3rem)] flex-col">
+          {/* Workspace bar */}
+          <div className="flex h-11 flex-shrink-0 items-center justify-between gap-3 border-b border-border bg-background px-3">
+            <div className="hidden min-w-0 items-center gap-1.5 text-sm sm:flex">
+              <Link href="/practice" className="text-muted-foreground hover:text-foreground">
+                Problems
+              </Link>
+              <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
+              <span className="truncate font-medium text-foreground">{problem.title}</span>
+            </div>
+            <div className="ml-auto flex flex-shrink-0 items-center gap-2">
+              <Select value={language} onValueChange={setLanguage}>
+                <SelectTrigger className="h-8 w-[132px] font-mono text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LANGUAGES.map((l) => (
+                    <SelectItem key={l.id} value={l.id} className="font-mono text-xs">
+                      {l.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button variant="outline" size="sm" className="h-8" onClick={handleRun} disabled={isRunning || isSubmitting}>
+                {isRunning ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Play className="mr-1.5 h-4 w-4" />}
+                Run
+              </Button>
+              <Button size="sm" className="h-8" onClick={handleSubmit} disabled={isRunning || isSubmitting}>
+                {isSubmitting ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Send className="mr-1.5 h-4 w-4" />}
+                Submit
+              </Button>
+            </div>
+          </div>
 
-                {/* Simple Problem Content */}
-                <ScrollArea className="flex-1 px-6">
-                  <div className="py-6 space-y-6">
-                    {/* Problem Description */}
-                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                      <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Description</h3>
-                      <div className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                        {problem.description}
-                      </div>
-                    </div>
-
-                    {/* Examples */}
-                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                      <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Examples</h3>
-                      <div className="space-y-4">
-                        {problem.examples.map((example, index) => (
-                          <div key={index} className="border border-gray-200 dark:border-gray-700 rounded p-3">
-                            <div className="text-sm font-medium text-gray-900 dark:text-white mb-2">Example {index + 1}:</div>
-                            <div className="space-y-2 text-sm">
-                              <div>
-                                <span className="font-medium">Input: </span>
-                                <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-800 dark:text-gray-200">
-                                  {example.input}
-                                </code>
-                              </div>
-                              <div>
-                                <span className="font-medium">Output: </span>
-                                <code className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-800 dark:text-gray-200">
-                                  {example.output}
-                                </code>
-                              </div>
-                              {example.explanation && (
-                                <div>
-                                  <span className="font-medium">Explanation: </span>
-                                  <span className="text-gray-600 dark:text-gray-400">{example.explanation}</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Constraints */}
-                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                      <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Constraints</h3>
-                      <ul className="space-y-1 text-gray-700 dark:text-gray-300">
-                        {problem.constraints.map((constraint, index) => (
-                          <li key={index} className="text-sm">• {constraint}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Tags */}
-                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                      <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Tags</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {problem.tags.map((tag, index) => (
-                          <span key={index} className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </ScrollArea>
-              </div>
-            </ResizablePanel>
-
-            <ResizableHandle className="w-2 bg-border hover:bg-border/80 transition-colors" />
-
-            {/* Code Editor Panel */}
-            <ResizablePanel defaultSize={55} minSize={40}>
-              <div className="h-full flex flex-col bg-black">
-                {/* Enhanced Header */}
-                <div className="bg-gray-900 border-b border-gray-700 p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                        <Code className="w-5 h-5 text-blue-400" />
-                        Code Editor
-                      </h2>
-                      <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
-                        <SelectTrigger className="w-[130px] bg-gray-800 border-gray-600 text-white hover:bg-gray-700 transition-colors">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-800 border-gray-600">
-                          <SelectItem value="cpp" className="text-white hover:bg-gray-700 focus:bg-gray-700">
-                            <span className="flex items-center gap-2">
-                              <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
-                              C++
-                            </span>
-                          </SelectItem>
-                          <SelectItem value="python" className="text-white hover:bg-gray-700 focus:bg-gray-700">
-                            <span className="flex items-center gap-2">
-                              <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
-                              Python
-                            </span>
-                          </SelectItem>
-                          <SelectItem value="javascript" className="text-white hover:bg-gray-700 focus:bg-gray-700">
-                            <span className="flex items-center gap-2">
-                              <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                              JavaScript
-                            </span>
-                          </SelectItem>
-                          <SelectItem value="java" className="text-white hover:bg-gray-700 focus:bg-gray-700">
-                            <span className="flex items-center gap-2">
-                              <span className="w-2 h-2 bg-red-400 rounded-full"></span>
-                              Java
-                            </span>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div className="flex items-center gap-3">
-                      <div className="text-xs text-gray-400 bg-gray-800 px-3 py-1 rounded-full">
-                        {selectedLanguage.toUpperCase()}
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={handleRunCode}
-                        disabled={isRunning}
-                        className="bg-blue-600 hover:bg-blue-700 text-white border-blue-600 transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
-                      >
-                        {isRunning ? (
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        ) : (
-                          <Play className="w-4 h-4 mr-2" />
-                        )}
-                        Run Code
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        onClick={handleSubmit}
-                        disabled={isSubmitting}
-                        className="bg-green-600 hover:bg-green-700 text-white transition-all duration-200 shadow-lg hover:shadow-green-500/25"
-                      >
-                        {isSubmitting ? (
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        ) : (
-                          <Send className="w-4 h-4 mr-2" />
-                        )}
-                        Submit
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Enhanced Code Editor */}
-                <div className="flex-1 bg-black">
-                  <CodeEditor 
-                    initialCode={code} 
-                    initialLanguage={selectedLanguage}
-                    className="h-full"
-                  />
-                </div>
-
-                {/* Enhanced Test Results */}
-                <div className="h-64 border-t border-gray-700 bg-gray-900">
-                  <div className="h-full flex flex-col">
-                    {/* Test Results Header */}
-                    <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                      <h3 className="text-white font-semibold flex items-center gap-2">
-                        <Terminal className="w-4 h-4 text-green-400" />
-                        Test Results
-                      </h3>
-                      {testResults.length > 0 && (
-                        <div className="flex items-center gap-2 text-xs">
-                          <span className="text-green-400">
-                            {testResults.filter(r => r.status === 'passed').length} Passed
-                          </span>
-                          <span className="text-gray-400">/</span>
-                          <span className="text-gray-400">{testResults.length} Total</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Test Results Content */}
-                    <div className="flex-1 overflow-y-auto p-4">
-                      {testResults.length > 0 ? (
-                        <div className="space-y-3">
-                          {testResults.map((result, index) => (
-                            <div key={result.id} className="bg-gray-800 border border-gray-700 rounded-lg p-3 hover:bg-gray-750 transition-colors">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-white font-medium">Case {index + 1}</span>
-                                  {result.status === "passed" ? (
-                                    <CheckCircle className="w-4 h-4 text-green-400" />
-                                  ) : (
-                                    <AlertTriangle className="w-4 h-4 text-red-400" />
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-3 text-xs text-gray-400">
-                                  <span className="bg-gray-700 px-2 py-1 rounded">{result.time}</span>
-                                  <span className="bg-gray-700 px-2 py-1 rounded">{result.memory}</span>
-                                </div>
-                              </div>
-                              <div className="text-xs text-gray-300 font-mono bg-gray-900 p-2 rounded">
-                                <div><span className="text-blue-400">Input:</span> {result.input}</div>
-                                <div><span className="text-green-400">Expected:</span> {result.expected}</div>
-                                <div><span className="text-yellow-400">Output:</span> {result.actual}</div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-center">
-                          <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                            <Bug className="w-8 h-8 text-gray-600" />
-                          </div>
-                          <h4 className="text-white font-medium mb-2">No Test Results Yet</h4>
-                          <p className="text-gray-400 text-sm max-w-sm">
-                            Click "Run Code" to execute your solution and see the test results here.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </main>
+          <div className="min-h-0 flex-1">
+            <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"} key={isMobile ? "v" : "h"}>
+              <ResizablePanel defaultSize={isMobile ? 35 : 42} minSize={20}>
+                {statement}
+              </ResizablePanel>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={isMobile ? 65 : 58} minSize={30}>
+                <ResizablePanelGroup direction="vertical">
+                  <ResizablePanel defaultSize={62} minSize={20}>
+                    {editorPane}
+                  </ResizablePanel>
+                  <ResizableHandle withHandle />
+                  <ResizablePanel defaultSize={38} minSize={15}>
+                    {consolePane}
+                  </ResizablePanel>
+                </ResizablePanelGroup>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </div>
+        </div>
       </SidebarInset>
     </>
   )

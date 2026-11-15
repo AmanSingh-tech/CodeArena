@@ -1,17 +1,21 @@
 FROM node:24-alpine3.21
 
-# Install C++ and Python
-RUN apk add --no-cache g++ python3 py3-pip
+# Toolchains for every language the judge accepts: C, C++, Python, Java (Node is the base image).
+RUN apk add --no-cache g++ python3 openjdk17-jdk
+ENV PATH="/usr/lib/jvm/default-jvm/bin:${PATH}"
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --omit=dev
 
 COPY . .
 
 ENV PORT=3002
+
+# Submissions are untrusted code: never run them as root.
+USER node
 
 EXPOSE 3002
 

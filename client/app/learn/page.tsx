@@ -73,19 +73,19 @@ export default function LearnPage() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="flex-1 p-8 bg-gradient-main min-h-screen">
+        <main className="flex-1 p-5 bg-gradient-main min-h-screen">
           <div className="max-w-7xl mx-auto">
-            <div className="mb-12">
-              <h1 className="text-5xl font-black mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            <div className="mb-6">
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1">
                 Learn & Grow
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl">
+              <p className="text-sm text-muted-foreground max-w-2xl">
                 Structured learning paths to advance your coding skills with expert-curated content
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card dark:glow-purple">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-purple">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-foreground text-sm font-bold flex items-center">
                     <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center mr-3">
@@ -95,12 +95,12 @@ export default function LearnPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-primary">8</div>
+                  <div className="text-3xl font-semibold font-mono text-primary">8</div>
                   <div className="text-sm text-muted-foreground mt-1">Active learning</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card dark:glow-blue">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-blue">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-foreground text-sm font-bold flex items-center">
                     <div className="w-8 h-8 bg-accent/20 rounded-xl flex items-center justify-center mr-3">
@@ -110,12 +110,12 @@ export default function LearnPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-accent">3</div>
+                  <div className="text-3xl font-semibold font-mono text-accent">3</div>
                   <div className="text-sm text-muted-foreground mt-1">Certificates earned</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-foreground text-sm font-bold flex items-center">
                     <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center mr-3">
@@ -125,12 +125,12 @@ export default function LearnPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-primary">47</div>
+                  <div className="text-3xl font-semibold font-mono text-primary">47</div>
                   <div className="text-sm text-muted-foreground mt-1">This month</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-foreground text-sm font-bold flex items-center">
                     <div className="w-8 h-8 bg-accent/20 rounded-xl flex items-center justify-center mr-3">
@@ -140,31 +140,31 @@ export default function LearnPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-accent">12</div>
+                  <div className="text-3xl font-semibold font-mono text-accent">12</div>
                   <div className="text-sm text-muted-foreground mt-1">Days active</div>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Learning Paths */}
               <div className="lg:col-span-2">
                 <div className="mb-8">
-                  <h2 className="text-2xl font-black text-foreground mb-6">Learning Paths</h2>
+                  <h2 className="text-2xl font-semibold text-foreground mb-6">Learning Paths</h2>
                   <div className="space-y-8">
                     {learningPaths.map((path) => (
                       <Card
                         key={path.id}
-                        className="bg-card/90 backdrop-blur-sm border-2 border-border hover:border-primary/50 shadow-lg hover:shadow-2xl transition-all duration-300 rounded-3xl feature-card"
+                        className="bg-card/90 border border-border hover:border-primary/50 transition-all duration-300 rounded-3xl feature-card"
                       >
-                        <CardHeader className="p-8">
+                        <CardHeader className="p-5">
                           <div className="flex items-start justify-between">
                             <div className="flex items-start space-x-6">
-                              <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+                              <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
                                 <BookOpen className="w-8 h-8 text-primary-foreground" />
                               </div>
                               <div className="flex-1">
-                                <CardTitle className="text-foreground text-2xl mb-3 font-black">{path.title}</CardTitle>
+                                <CardTitle className="text-foreground text-2xl mb-3 font-semibold">{path.title}</CardTitle>
                                 <CardDescription className="text-muted-foreground mb-4 text-base">
                                   {path.description}
                                 </CardDescription>
@@ -186,7 +186,7 @@ export default function LearnPage() {
                             </div>
                             <Badge
                               variant="outline"
-                              className={`px-4 py-2 font-semibold rounded-xl border-2 ${
+                              className={`px-4 py-2 font-semibold rounded-xl border ${
                                 path.difficulty === "Beginner"
                                   ? "text-green-400 border-green-500/30 bg-green-500/10"
                                   : path.difficulty === "Intermediate"
@@ -210,7 +210,7 @@ export default function LearnPage() {
                             <div className="text-sm text-muted-foreground font-medium">
                               {path.enrolled.toLocaleString()} students enrolled
                             </div>
-                            <Button className="btn-primary text-primary-foreground font-semibold px-8 py-3 rounded-2xl shadow-lg">
+                            <Button className="btn-primary text-primary-foreground font-semibold px-8 py-3 rounded-2xl">
                               {path.progress > 0 ? "Continue" : "Start Learning"}
                             </Button>
                           </div>
@@ -224,7 +224,7 @@ export default function LearnPage() {
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* Continue Learning */}
-                <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl dark:glow-purple">
+                <Card className="bg-card/90 border border-border rounded-3xl dark:glow-purple">
                   <CardHeader>
                     <CardTitle className="text-foreground font-bold">Continue Learning</CardTitle>
                   </CardHeader>
@@ -256,7 +256,7 @@ export default function LearnPage() {
                 </Card>
 
                 {/* Daily Challenge */}
-                <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl dark:glow-blue">
+                <Card className="bg-card/90 border border-border rounded-3xl dark:glow-blue">
                   <CardHeader>
                     <CardTitle className="text-foreground font-bold">Daily Challenge</CardTitle>
                     <CardDescription className="text-muted-foreground">
@@ -274,14 +274,14 @@ export default function LearnPage() {
                         input string is valid.
                       </p>
                     </div>
-                    <Button className="w-full btn-primary text-primary-foreground font-semibold py-3 rounded-2xl shadow-lg">
+                    <Button className="w-full btn-primary text-primary-foreground font-semibold py-3 rounded-2xl">
                       Solve Challenge
                     </Button>
                   </CardContent>
                 </Card>
 
                 {/* Achievements */}
-                <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl">
+                <Card className="bg-card/90 border border-border rounded-3xl">
                   <CardHeader>
                     <CardTitle className="text-foreground font-bold">Recent Achievements</CardTitle>
                   </CardHeader>

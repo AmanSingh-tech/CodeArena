@@ -105,9 +105,9 @@ export default function AICoverLetterGenerator() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-8">
-          <CardTitle className="text-2xl font-black text-foreground flex items-center">
+      <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-5">
+          <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
             <FileText className="w-6 h-6 mr-3 text-primary" />
             AI Cover Letter Generator
           </CardTitle>
@@ -116,7 +116,7 @@ export default function AICoverLetterGenerator() {
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="p-8 space-y-6">
+        <CardContent className="p-5 space-y-6">
           {/* Job Description */}
           <div>
             <Label htmlFor="jobDescription" className="text-foreground font-medium mb-2 block">
@@ -210,7 +210,7 @@ export default function AICoverLetterGenerator() {
           <Button 
             onClick={handleGenerateCoverLetter}
             disabled={loading || !jobDescription.trim()}
-            className="btn-primary text-primary-foreground font-semibold px-8 py-3 rounded-2xl shadow-lg w-full"
+            className="btn-primary text-primary-foreground font-semibold px-8 py-3 rounded-2xl w-full"
           >
             {loading ? (
               <>
@@ -229,9 +229,9 @@ export default function AICoverLetterGenerator() {
 
       {/* Generated Cover Letter */}
       {coverLetter && (
-        <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 p-8">
-            <CardTitle className="text-2xl font-black text-foreground flex items-center">
+        <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 p-5">
+            <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
               <FileText className="w-6 h-6 mr-3 text-accent" />
               Your AI-Generated Cover Letter
             </CardTitle>
@@ -240,7 +240,7 @@ export default function AICoverLetterGenerator() {
             </CardDescription>
           </CardHeader>
           
-          <CardContent className="p-8">
+          <CardContent className="p-5">
             <div className="flex gap-3 mb-6">
               <Button 
                 onClick={handleDownloadPDF}

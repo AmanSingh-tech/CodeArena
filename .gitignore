@@ -16,3 +16,12 @@ aws-exports.ts
 amplify/
 amplify-config.js
 amplify-config.ts
+# Dependencies and build output
+node_modules/
+*.tsbuildinfo
+
+# Judge scratch files (submissions are compiled in the OS temp directory)
+Compiler/Help_Functions/codes/
+Compiler/Help_Functions/executable/
+Compiler/Help_Functions/inputs/
+*.out

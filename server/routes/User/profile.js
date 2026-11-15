@@ -17,7 +17,7 @@ if (!jwtpasskey) {
 }
 
 function authenticateToken(req, res, next) {
-  const tokenHeader = req.headers.usertoken;
+  const tokenHeader = req.headers.authorization || req.headers.usertoken;
 
   if (!tokenHeader) {
     return res.status(401).json({ success: false, message: "Authorization token is missing" });
@@ -127,7 +127,19 @@ route.get("/submission/:pid", async (req, res) => {
   try {
     const response = await prisma.solve.findMany({
       where: { userId: userId, problemId: pid },
-      select: { code: true, date: true }
+      orderBy: { date: 'desc' },
+      take: 50,
+      select: {
+        id: true,
+        code: true,
+        date: true,
+        success: true,
+        error: true,
+        language: true,
+        testsPassed: true,
+        totalTests: true,
+        executionTime: true,
+      }
     });
     return res.json({ success: true, submissions: response });
   } catch (error) {

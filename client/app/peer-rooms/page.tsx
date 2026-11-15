@@ -76,25 +76,25 @@ export default function PeerRoomsPage() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="flex-1 p-8 bg-gradient-main min-h-screen">
+        <main className="flex-1 p-5 bg-gradient-main min-h-screen">
           <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between mb-12">
+            <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-5xl font-black mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1">
                   Peer Rooms
                 </h1>
-                <p className="text-xl text-muted-foreground max-w-2xl">
+                <p className="text-sm text-muted-foreground max-w-2xl">
                   Connect with fellow developers and learn together in collaborative spaces
                 </p>
               </div>
-              <Button className="btn-primary text-primary-foreground font-semibold px-8 py-4 text-lg rounded-2xl shadow-lg">
+              <Button className="btn-primary text-primary-foreground font-semibold px-8 py-4 text-lg rounded-2xl">
                 <Plus className="w-5 h-5 mr-2" />
                 Create Room
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card dark:glow-purple">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-purple">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-foreground text-sm font-bold flex items-center">
                     <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center mr-3">
@@ -104,12 +104,12 @@ export default function PeerRoomsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-primary">127</div>
+                  <div className="text-3xl font-semibold font-mono text-primary">127</div>
                   <div className="text-sm text-muted-foreground mt-1">Live discussions</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card dark:glow-blue">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-blue">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-foreground text-sm font-bold flex items-center">
                     <div className="w-8 h-8 bg-accent/20 rounded-xl flex items-center justify-center mr-3">
@@ -119,12 +119,12 @@ export default function PeerRoomsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-accent">1,847</div>
+                  <div className="text-3xl font-semibold font-mono text-accent">1,847</div>
                   <div className="text-sm text-muted-foreground mt-1">Currently active</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-foreground text-sm font-bold flex items-center">
                     <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center mr-3">
@@ -134,12 +134,12 @@ export default function PeerRoomsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-primary">5</div>
+                  <div className="text-3xl font-semibold font-mono text-primary">5</div>
                   <div className="text-sm text-muted-foreground mt-1">Joined rooms</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-foreground text-sm font-bold flex items-center">
                     <div className="w-8 h-8 bg-accent/20 rounded-xl flex items-center justify-center mr-3">
@@ -149,13 +149,13 @@ export default function PeerRoomsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-accent">23</div>
+                  <div className="text-3xl font-semibold font-mono text-accent">23</div>
                   <div className="text-sm text-muted-foreground mt-1">Your activity</div>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Main Content */}
               <div className="lg:col-span-2">
                 <div className="mb-8">
@@ -163,27 +163,27 @@ export default function PeerRoomsPage() {
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                     <Input
                       placeholder="Search rooms by name, category, or host..."
-                      className="pl-12 h-14 bg-card/80 backdrop-blur-sm border-2 border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-2xl text-lg"
+                      className="pl-12 h-14 bg-card/80 border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-2xl text-lg"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-8">
-                  <h2 className="text-2xl font-black text-foreground">Discover Rooms</h2>
+                  <h2 className="text-2xl font-semibold text-foreground">Discover Rooms</h2>
                   {peerRooms.map((room) => (
                     <Card
                       key={room.id}
-                      className="bg-card/90 backdrop-blur-sm border-2 border-border hover:border-primary/50 shadow-lg hover:shadow-2xl transition-all duration-300 rounded-3xl feature-card"
+                      className="bg-card/90 border border-border hover:border-primary/50 transition-all duration-300 rounded-3xl feature-card"
                     >
-                      <CardHeader className="p-8">
+                      <CardHeader className="p-5">
                         <div className="flex items-start justify-between">
                           <div className="flex items-start space-x-6">
-                            <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+                            <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
                               <Users className="w-8 h-8 text-primary-foreground" />
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center space-x-3 mb-3">
-                                <CardTitle className="text-foreground text-2xl font-black">{room.name}</CardTitle>
+                                <CardTitle className="text-foreground text-2xl font-semibold">{room.name}</CardTitle>
                                 {room.type === "private" ? (
                                   <div className="w-8 h-8 bg-yellow-500/20 rounded-xl flex items-center justify-center">
                                     <Lock className="w-4 h-4 text-yellow-400" />
@@ -212,7 +212,7 @@ export default function PeerRoomsPage() {
                           </div>
                           <Badge
                             variant="outline"
-                            className="border-2 border-primary/30 text-primary bg-primary/10 font-semibold px-4 py-2 rounded-xl"
+                            className="border border-primary/30 text-primary bg-primary/10 font-semibold px-4 py-2 rounded-xl"
                           >
                             {room.category}
                           </Badge>
@@ -227,14 +227,14 @@ export default function PeerRoomsPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="border-2 border-primary/30 bg-card hover:bg-primary/10 text-primary font-semibold px-6 py-2 rounded-xl"
+                              className="border border-primary/30 bg-card hover:bg-primary/10 text-primary font-semibold px-6 py-2 rounded-xl"
                             >
                               <MessageCircle className="w-4 h-4 mr-2" />
                               Chat
                             </Button>
                             <Button
                               size="sm"
-                              className="btn-primary text-primary-foreground font-semibold px-6 py-2 rounded-xl shadow-lg"
+                              className="btn-primary text-primary-foreground font-semibold px-6 py-2 rounded-xl"
                             >
                               Join Room
                             </Button>
@@ -249,7 +249,7 @@ export default function PeerRoomsPage() {
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* My Rooms */}
-                <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl dark:glow-purple">
+                <Card className="bg-card/90 border border-border rounded-3xl dark:glow-purple">
                   <CardHeader>
                     <CardTitle className="text-foreground font-bold">My Rooms</CardTitle>
                   </CardHeader>
@@ -276,25 +276,25 @@ export default function PeerRoomsPage() {
                 </Card>
 
                 {/* Quick Actions */}
-                <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl dark:glow-blue">
+                <Card className="bg-card/90 border border-border rounded-3xl dark:glow-blue">
                   <CardHeader>
                     <CardTitle className="text-foreground font-bold">Quick Actions</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <Button className="w-full btn-primary text-primary-foreground font-semibold py-3 rounded-2xl shadow-lg">
+                    <Button className="w-full btn-primary text-primary-foreground font-semibold py-3 rounded-2xl">
                       <Plus className="w-4 h-4 mr-2" />
                       Create New Room
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full border-2 border-primary/30 bg-card hover:bg-primary/10 text-primary font-semibold py-3 rounded-2xl"
+                      className="w-full border border-primary/30 bg-card hover:bg-primary/10 text-primary font-semibold py-3 rounded-2xl"
                     >
                       <Video className="w-4 h-4 mr-2" />
                       Start Video Call
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full border-2 border-accent/30 bg-card hover:bg-accent/10 text-accent font-semibold py-3 rounded-2xl"
+                      className="w-full border border-accent/30 bg-card hover:bg-accent/10 text-accent font-semibold py-3 rounded-2xl"
                     >
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Browse Discussions
@@ -303,7 +303,7 @@ export default function PeerRoomsPage() {
                 </Card>
 
                 {/* Online Friends */}
-                <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl">
+                <Card className="bg-card/90 border border-border rounded-3xl">
                   <CardHeader>
                     <CardTitle className="text-foreground font-bold">Online Friends</CardTitle>
                   </CardHeader>
@@ -316,7 +316,7 @@ export default function PeerRoomsPage() {
                       ].map((friend, index) => (
                         <div key={index} className="flex items-center space-x-4 p-3 bg-muted/30 rounded-2xl">
                           <div className="relative">
-                            <Avatar className="w-12 h-12 border-2 border-primary/20">
+                            <Avatar className="w-12 h-12 border border-primary/20">
                               <AvatarImage src={`/placeholder.svg?height=48&width=48`} alt={friend.name} />
                               <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground font-bold">
                                 {friend.name
@@ -325,7 +325,7 @@ export default function PeerRoomsPage() {
                                   .join("")}
                               </AvatarFallback>
                             </Avatar>
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-card"></div>
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border border-card"></div>
                           </div>
                           <div>
                             <div className="font-bold text-foreground">{friend.name}</div>

@@ -83,9 +83,9 @@ export default function AIResumeAnalyzer() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-8">
-          <CardTitle className="text-2xl font-black text-foreground flex items-center">
+      <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-5">
+          <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
             <FileText className="w-6 h-6 mr-3 text-primary" />
             AI Resume Analyzer
           </CardTitle>
@@ -94,7 +94,7 @@ export default function AIResumeAnalyzer() {
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="p-8 space-y-6">
+        <CardContent className="p-5 space-y-6">
           <div>
             <Label htmlFor="targetRole" className="text-foreground font-medium mb-2 block">
               Target Role (Optional)
@@ -127,7 +127,7 @@ export default function AIResumeAnalyzer() {
           <Button 
             onClick={handleAnalyzeResume}
             disabled={loading || !resumeText.trim()}
-            className="btn-primary text-primary-foreground font-semibold px-8 py-3 rounded-2xl shadow-lg w-full"
+            className="btn-primary text-primary-foreground font-semibold px-8 py-3 rounded-2xl w-full"
           >
             {loading ? (
               <>
@@ -146,11 +146,11 @@ export default function AIResumeAnalyzer() {
 
       {/* Analysis Results */}
       {analysis && (
-        <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 p-8">
+        <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 p-5">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-2xl font-black text-foreground flex items-center">
+                <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
                   <CheckCircle className="w-6 h-6 mr-3 text-green-500" />
                   Resume Analysis Results
                 </CardTitle>
@@ -164,7 +164,7 @@ export default function AIResumeAnalyzer() {
                   onClick={handleDisplayPDF}
                   variant="outline"
                   size="sm"
-                  className="border-2 border-border bg-card hover:bg-muted/50 text-foreground"
+                  className="border border-border bg-card hover:bg-muted/50 text-foreground"
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   View PDF
@@ -173,7 +173,7 @@ export default function AIResumeAnalyzer() {
                   onClick={handleDownloadPDF}
                   variant="outline"
                   size="sm"
-                  className="border-2 border-border bg-card hover:bg-muted/50 text-foreground"
+                  className="border border-border bg-card hover:bg-muted/50 text-foreground"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Download PDF
@@ -182,7 +182,7 @@ export default function AIResumeAnalyzer() {
             </div>
           </CardHeader>
           
-          <CardContent className="p-8">
+          <CardContent className="p-5">
             <div className="prose prose-sm max-w-none dark:prose-invert">
               <div className="whitespace-pre-wrap text-foreground leading-relaxed">
                 {analysis}

@@ -108,9 +108,9 @@ export default function AIRecommendations() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-8">
-          <CardTitle className="text-2xl font-black text-foreground flex items-center">
+      <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-5">
+          <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
             <Brain className="w-6 h-6 mr-3 text-primary" />
             AI-Powered Internship Recommendations
           </CardTitle>
@@ -119,7 +119,7 @@ export default function AIRecommendations() {
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="p-8 space-y-6">
+        <CardContent className="p-5 space-y-6">
           {/* User Profile Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground flex items-center">
@@ -259,7 +259,7 @@ export default function AIRecommendations() {
           <Button 
             onClick={handleGetRecommendations}
             disabled={loading}
-            className="btn-primary text-primary-foreground font-semibold px-8 py-3 rounded-2xl shadow-lg w-full"
+            className="btn-primary text-primary-foreground font-semibold px-8 py-3 rounded-2xl w-full"
           >
             {loading ? (
               <>
@@ -278,9 +278,9 @@ export default function AIRecommendations() {
 
       {/* Recommendations Results */}
       {recommendations && (
-        <Card className="bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 p-8">
-            <CardTitle className="text-2xl font-black text-foreground flex items-center">
+        <Card className="bg-card/90 border border-border rounded-3xl overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10 p-5">
+            <CardTitle className="text-2xl font-semibold text-foreground flex items-center">
               <TrendingUp className="w-6 h-6 mr-3 text-accent" />
               Your Personalized Recommendations
             </CardTitle>
@@ -289,7 +289,7 @@ export default function AIRecommendations() {
             </CardDescription>
           </CardHeader>
           
-          <CardContent className="p-8">
+          <CardContent className="p-5">
             <div className="flex gap-3 mb-6">
               <Button 
                 onClick={handleDownloadPDF}

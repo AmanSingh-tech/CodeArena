@@ -1,6 +1,20 @@
 // lib/api.ts
 
-const BASE_URL = process.env.NEXT_PUBLIC_NEXTJS_URL;
+// NEXT_PUBLIC_NEXTJS_URL is the name used in existing deployments;
+// NEXT_PUBLIC_BACKEND_URL is the one the README and docker-compose set.
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_NEXTJS_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "http://localhost:8000";
+
+export function getStoredToken(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem("token");
+  } catch {
+    return null;
+  }
+}
 
 export async function loginUser(username: string, password: string) {
   const res = await fetch(`${BASE_URL}/new/user/signin`, {
@@ -34,7 +48,7 @@ export async function registerUser(data: {
 
 
 export async function getProblems() {
-  const res = await fetch(`${BASE_URL}/new/problems/getAllProblems`, {
+  const res = await fetch(`${BASE_URL}/new/problems/problems`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +59,7 @@ export async function getProblems() {
 }
 
 export async function getProblem(id: string) {
-  const res = await fetch(`${BASE_URL}/new/problems/getProblem/${id}`, {
+  const res = await fetch(`${BASE_URL}/new/problems/problem/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -82,7 +96,7 @@ export async function createProblem(data: {
 }
 
 export async function getUserProfile(token: string) {
-  const res = await fetch(`${BASE_URL}/new/user/profile`, {
+  const res = await fetch(`${BASE_URL}/user/profile`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -93,20 +107,42 @@ export async function getUserProfile(token: string) {
   return res.json();
 }
 
+// Judge a solution against every test case of a problem and record the submission.
 export async function submitCode(data: {
   problemId: string;
   code: string;
   language: string;
   token: string;
 }) {
-  const res = await fetch(`${BASE_URL}/new/evaluation/submit`, {
+  const res = await fetch(`${BASE_URL}/new/evaluation/submit/${data.problemId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "usertoken": `Bearer ${data.token}`,
+      "Authorization": `Bearer ${data.token}`,
     },
     body: JSON.stringify({
-      problemId: data.problemId,
+      code: data.code,
+      language: data.language,
+      usertoken: data.token,
+    }),
+  });
+
+  return res.json();
+}
+
+// Run a solution against a problem's test cases without recording a submission.
+export async function runCode(data: {
+  problemId: string;
+  code: string;
+  language: string;
+  token?: string;
+}) {
+  const res = await fetch(`${BASE_URL}/new/evaluation/run/${data.problemId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
       code: data.code,
       language: data.language,
     }),
@@ -115,23 +151,51 @@ export async function submitCode(data: {
   return res.json();
 }
 
-export async function runCode(data: {
-  problemId: string;
+// Run code once against custom stdin.
+export async function runCustom(data: {
   code: string;
   language: string;
-  token: string;
+  inputs: string;
 }) {
   const res = await fetch(`${BASE_URL}/new/evaluation/run`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "usertoken": `Bearer ${data.token}`,
     },
-    body: JSON.stringify({
-      problemId: data.problemId,
-      code: data.code,
-      language: data.language,
-    }),
+    body: JSON.stringify(data),
+  });
+
+  return res.json();
+}
+
+// The signed-in user's submissions for one problem, newest first.
+export async function getProblemSubmissions(problemId: string, token: string) {
+  const res = await fetch(`${BASE_URL}/user/submission/${problemId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "usertoken": `Bearer ${token}`,
+    },
+  });
+
+  return res.json();
+}
+
+export async function getHint(problemId: string) {
+  const res = await fetch(`${BASE_URL}/ai/gethint`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pid: problemId }),
+  });
+
+  return res.json();
+}
+
+export async function findError(problemId: string, code: string) {
+  const res = await fetch(`${BASE_URL}/ai/find_error`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pid: problemId, code }),
   });
 
   return res.json();

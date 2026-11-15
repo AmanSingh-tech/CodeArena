@@ -1,6 +1,16 @@
 "use client"
 
-import { Trophy, Code, Edit, BarChart3, Briefcase, User, BookOpen, Users, FileText } from "lucide-react"
+import {
+  Trophy,
+  ListChecks,
+  TerminalSquare,
+  BarChart3,
+  Briefcase,
+  User,
+  BookOpen,
+  Users,
+  History,
+} from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -16,72 +26,88 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-const navigation = [
-  { name: "Contests", icon: Trophy, href: "/contests", color: "text-primary" },
-  { name: "Practice", icon: Code, href: "/practice", color: "text-accent" },
-  { name: "Code Editor", icon: Edit, href: "/code-editor", color: "text-primary" },
-  { name: "Submissions", icon: FileText, href: "/submissions", color: "text-blue-500" },
-  { name: "Leaderboard", icon: BarChart3, href: "/leaderboard", color: "text-accent" },
-  { name: "Internship Tracker", icon: Briefcase, href: "/internship-tracker", color: "text-primary" },
-  { name: "Profile", icon: User, href: "/profile", color: "text-accent" },
-  { name: "Learn", icon: BookOpen, href: "/learn", color: "text-primary" },
-  { name: "Peer Rooms", icon: Users, href: "/peer-rooms", color: "text-accent" },
+const groups = [
+  {
+    label: "Judge",
+    items: [
+      { name: "Problems", icon: ListChecks, href: "/practice", match: ["/practice", "/solve"] },
+      { name: "Playground", icon: TerminalSquare, href: "/code-editor", match: ["/code-editor"] },
+      { name: "Submissions", icon: History, href: "/submissions", match: ["/submissions"] },
+    ],
+  },
+  {
+    label: "Compete",
+    items: [
+      { name: "Contests", icon: Trophy, href: "/contests", match: ["/contests"] },
+      { name: "Leaderboard", icon: BarChart3, href: "/leaderboard", match: ["/leaderboard"] },
+      { name: "Peer Rooms", icon: Users, href: "/peer-rooms", match: ["/peer-rooms"] },
+    ],
+  },
+  {
+    label: "Career",
+    items: [
+      { name: "Internship Tracker", icon: Briefcase, href: "/internship-tracker", match: ["/internship-tracker"] },
+      { name: "Learn", icon: BookOpen, href: "/learn", match: ["/learn"] },
+      { name: "Profile", icon: User, href: "/profile", match: ["/profile"] },
+    ],
+  },
 ]
+
+export function Logo({ collapsedAware = false }: { collapsedAware?: boolean }) {
+  return (
+    <Link href="/" className="flex items-center gap-2.5">
+      <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md border border-primary/40 bg-primary/10 font-mono text-xs font-bold text-primary">
+        {">_"}
+      </span>
+      <span
+        className={`font-mono text-sm font-semibold tracking-tight text-foreground ${
+          collapsedAware ? "group-data-[collapsible=icon]:hidden" : ""
+        }`}
+      >
+        code<span className="text-primary">arena</span>
+      </span>
+    </Link>
+  )
+}
 
 export function AppSidebar() {
   const pathname = usePathname()
 
   return (
-    <Sidebar
-      collapsible="icon"
-      className="border-r-2 border-border/30 bg-sidebar/60 backdrop-blur-xl w-64 md:w-56 lg:w-64 xl:w-72 group-data-[collapsible=icon]:w-16 transition-all duration-300"
-      variant="sidebar"
-    >
-      <SidebarHeader className="p-2 sm:p-3 md:p-4 group-data-[collapsible=icon]:p-2 bg-sidebar/10 backdrop-blur-sm border-b border-border/20">
-        <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4 px-1 sm:px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:h-8 bg-gradient-to-br from-primary to-accent rounded-lg sm:rounded-xl md:rounded-2xl group-data-[collapsible=icon]:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 group-data-[collapsible=icon]:w-4 group-data-[collapsible=icon]:h-4 bg-sidebar rounded-sm sm:rounded-md md:rounded-lg group-data-[collapsible=icon]:rounded-md opacity-90"></div>
-          </div>
-          <span className="font-black text-sidebar-foreground text-sm sm:text-base md:text-lg lg:text-xl group-data-[collapsible=icon]:hidden truncate">
-            CodeArena
-          </span>
-        </div>
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border" variant="sidebar">
+      <SidebarHeader className="h-12 justify-center border-b border-sidebar-border px-3 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
+        <Logo collapsedAware />
       </SidebarHeader>
-      <SidebarContent className="px-1 sm:px-2 bg-sidebar/5 backdrop-blur-sm">
-        <SidebarGroup>
-          <SidebarGroupLabel className="group-data-[collapsible=icon]:sr-only text-sidebar-foreground/70 font-bold px-2 sm:px-3 md:px-4 mb-2 group-data-[collapsible=icon]:px-0 text-xs sm:text-sm">
-            Navigation
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href
-                return (
-                  <SidebarMenuItem key={item.name}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive}
-                      tooltip={item.name}
-                      className="hover:bg-sidebar-accent data-[active=true]:bg-gradient-to-r data-[active=true]:from-primary/20 data-[active=true]:to-accent/20 data-[active=true]:text-primary rounded-lg sm:rounded-xl md:rounded-2xl mx-0.5 sm:mx-1 group-data-[collapsible=icon]:mx-0 group-data-[collapsible=icon]:rounded-xl font-semibold transition-all duration-200 group-data-[collapsible=icon]:size-10 group-data-[collapsible=icon]:p-0 h-9 sm:h-10 md:h-12 group-data-[collapsible=icon]:h-10"
-                    >
-                      <Link
-                        href={item.href}
-                        className="flex items-center w-full group-data-[collapsible=icon]:justify-center"
+      <SidebarContent className="gap-0 py-2">
+        {groups.map((group) => (
+          <SidebarGroup key={group.label} className="py-1.5">
+            <SidebarGroupLabel className="h-7 px-3 font-mono text-[11px] uppercase tracking-wider text-muted-foreground group-data-[collapsible=icon]:sr-only">
+              {group.label}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="gap-0.5">
+                {group.items.map((item) => {
+                  const isActive = item.match.some((m) => pathname === m || pathname.startsWith(`${m}/`))
+                  return (
+                    <SidebarMenuItem key={item.name}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        tooltip={item.name}
+                        className="relative rounded-md px-3 text-sidebar-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground data-[active=true]:before:absolute data-[active=true]:before:left-0 data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5 data-[active=true]:before:w-0.5 data-[active=true]:before:rounded-full data-[active=true]:before:bg-primary"
                       >
-                        <item.icon
-                          className={`w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5 ${item.color} group-data-[collapsible=icon]:w-5 group-data-[collapsible=icon]:h-5 flex-shrink-0`}
-                        />
-                        <span className="font-semibold text-xs sm:text-sm md:text-base group-data-[collapsible=icon]:sr-only ml-2 sm:ml-3 truncate">
-                          {item.name}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+                        <Link href={item.href}>
+                          <item.icon className={isActive ? "text-primary" : "text-muted-foreground"} />
+                          <span>{item.name}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

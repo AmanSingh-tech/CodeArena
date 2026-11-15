@@ -57,11 +57,11 @@ const handleSubmit = async (e: React.FormEvent) => {
             <AppSidebar />
             <SidebarInset>
                 <Header />
-                <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-gradient-main min-h-screen">
-                    <Card className="w-full max-w-md bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl dark:glow-blue">
+                <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-gradient-main min-h-[calc(100vh-3rem)]">
+                    <Card className="w-full max-w-md bg-card/90 border border-border rounded-3xl dark:glow-blue">
                         <CardHeader className="text-center p-6 sm:p-8">
-                            <CardTitle className="text-3xl sm:text-4xl font-black text-foreground mb-2">Join CodeArena</CardTitle>
-                            <CardDescription className="text-muted-foreground text-base sm:text-lg">
+                            <CardTitle className="text-2xl font-semibold tracking-tight text-foreground mb-2">Join CodeArena</CardTitle>
+                            <CardDescription className="text-muted-foreground text-sm">
                                 Create your account to start your coding journey
                             </CardDescription>
                         </CardHeader>
@@ -76,7 +76,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         required
-                                        className="h-12 bg-card border-2 border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
+                                        className="h-10 bg-card border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
                                     />
                                 </div>
 
@@ -88,7 +88,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="h-12 bg-card border-2 border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
+                                        className="h-10 bg-card border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
                                     />
                                 </div>
 
@@ -100,7 +100,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                                         value={firstname}
                                         onChange={(e) => setFirstname(e.target.value)}
                                         required
-                                        className="h-12 bg-card border-2 border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
+                                        className="h-10 bg-card border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
                                     />
                                 </div>
 
@@ -111,7 +111,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                                         type="text"
                                         value={lastname}
                                         onChange={(e) => setLastname(e.target.value)}
-                                        className="h-12 bg-card border-2 border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
+                                        className="h-10 bg-card border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
                                     />
                                 </div>
 
@@ -123,14 +123,14 @@ const handleSubmit = async (e: React.FormEvent) => {
                                         value={dob}
                                         onChange={(e) => setDob(e.target.value)}
                                         required
-                                        className="h-12 bg-card border-2 border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
+                                        className="h-10 bg-card border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
                                     />
                                 </div>
 
                                 <Button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full btn-primary text-primary-foreground font-semibold py-3 sm:py-4 rounded-2xl shadow-lg text-base sm:text-lg"
+                                    className="w-full btn-primary text-primary-foreground font-semibold h-10 rounded-md text-sm"
                                 >
                                     {loading ? "Registering..." : "Register"}
                                 </Button>

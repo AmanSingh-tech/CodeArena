@@ -22,16 +22,22 @@ export async function getLeaderboard(req, res) {
 
     // Calculate leaderboard statistics for each user
     const leaderboardData = users.map(user => {
-      const successfulSolves = user.solved.filter(solve => solve.success);
+      // One entry per problem: re-submitting an accepted solution must not raise the rating.
+      const seenProblems = new Set();
+      const successfulSolves = user.solved.filter(solve => {
+        if (!solve.success || seenProblems.has(solve.problemId)) return false;
+        seenProblems.add(solve.problemId);
+        return true;
+      });
       const totalSolved = successfulSolves.length;
       
       // Calculate rating based on problems solved and difficulty
       let rating = 1200; // Base rating
       successfulSolves.forEach(solve => {
-        const difficulty = solve.problem.difficulty;
-        if (difficulty === 'Easy') rating += 10;
-        else if (difficulty === 'Medium') rating += 25;
-        else if (difficulty === 'Hard') rating += 50;
+        const difficulty = String(solve.problem.difficulty).toLowerCase();
+        if (difficulty === 'easy') rating += 10;
+        else if (difficulty === 'medium') rating += 25;
+        else if (difficulty === 'hard') rating += 50;
       });
 
       // Get recent activity (last 30 days)
@@ -124,15 +130,21 @@ export async function getLeaderboardStats(req, res) {
 
     // Calculate ratings and stats
     const usersWithStats = users.map(user => {
-      const successfulSolves = user.solved.filter(solve => solve.success);
+      // One entry per problem: re-submitting an accepted solution must not raise the rating.
+      const seenProblems = new Set();
+      const successfulSolves = user.solved.filter(solve => {
+        if (!solve.success || seenProblems.has(solve.problemId)) return false;
+        seenProblems.add(solve.problemId);
+        return true;
+      });
       const totalSolved = successfulSolves.length;
       
       let rating = 1200;
       successfulSolves.forEach(solve => {
-        const difficulty = solve.problem.difficulty;
-        if (difficulty === 'Easy') rating += 10;
-        else if (difficulty === 'Medium') rating += 25;
-        else if (difficulty === 'Hard') rating += 50;
+        const difficulty = String(solve.problem.difficulty).toLowerCase();
+        if (difficulty === 'easy') rating += 10;
+        else if (difficulty === 'medium') rating += 25;
+        else if (difficulty === 'hard') rating += 50;
       });
 
       return {
@@ -152,9 +164,7 @@ export async function getLeaderboardStats(req, res) {
       user.solved > max.solved ? user : max
     );
 
-    const totalSolves = users.reduce((total, user) => 
-      total + user.solved.filter(solve => solve.success).length, 0
-    );
+    const totalSolves = usersWithStats.reduce((total, user) => total + user.solved, 0);
 
     res.json({
       success: true,

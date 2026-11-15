@@ -77,20 +77,20 @@ export default function InternshipTrackerPage() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="flex-1 p-8 bg-gradient-main min-h-screen">
+        <main className="flex-1 p-5 bg-gradient-main min-h-screen">
           <div className="max-w-7xl mx-auto">
             {/* Header Section */}
-            <div className="mb-12">
+            <div className="mb-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h1 className="text-5xl font-black mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1">
                     Internship Tracker
                   </h1>
-                  <p className="text-xl text-muted-foreground max-w-2xl">
+                  <p className="text-sm text-muted-foreground max-w-2xl">
                     Track your internship applications and leverage AI-powered tools to boost your success rate
                   </p>
                 </div>
-                <Button className="btn-primary text-primary-foreground font-semibold px-8 py-4 text-lg rounded-2xl shadow-lg">
+                <Button className="btn-primary text-primary-foreground font-semibold px-8 py-4 text-lg rounded-2xl">
                   <Plus className="w-5 h-5 mr-2" />
                   Add Application
                 </Button>
@@ -98,7 +98,7 @@ export default function InternshipTrackerPage() {
 
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card dark:glow-purple">
+                <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-purple">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-foreground text-sm font-bold flex items-center">
                       <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center mr-3">
@@ -108,12 +108,12 @@ export default function InternshipTrackerPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-4xl font-black text-primary">24</div>
+                    <div className="text-3xl font-semibold font-mono text-primary">24</div>
                     <div className="text-sm text-muted-foreground mt-1">+3 this week</div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card dark:glow-blue">
+                <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-blue">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-foreground text-sm font-bold flex items-center">
                       <div className="w-8 h-8 bg-accent/20 rounded-xl flex items-center justify-center mr-3">
@@ -123,12 +123,12 @@ export default function InternshipTrackerPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-4xl font-black text-accent">8</div>
+                    <div className="text-3xl font-semibold font-mono text-accent">8</div>
                     <div className="text-sm text-muted-foreground mt-1">Active interviews</div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card">
+                <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-foreground text-sm font-bold flex items-center">
                       <div className="w-8 h-8 bg-primary/20 rounded-xl flex items-center justify-center mr-3">
@@ -138,12 +138,12 @@ export default function InternshipTrackerPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-4xl font-black text-primary">3</div>
+                    <div className="text-3xl font-semibold font-mono text-primary">3</div>
                     <div className="text-sm text-muted-foreground mt-1">Pending decisions</div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card">
+                <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-foreground text-sm font-bold flex items-center">
                       <div className="w-8 h-8 bg-accent/20 rounded-xl flex items-center justify-center mr-3">
@@ -153,7 +153,7 @@ export default function InternshipTrackerPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-4xl font-black text-accent">92%</div>
+                    <div className="text-3xl font-semibold font-mono text-accent">92%</div>
                     <div className="text-sm text-muted-foreground mt-1">Success score</div>
                   </CardContent>
                 </Card>
@@ -162,7 +162,7 @@ export default function InternshipTrackerPage() {
 
             {/* Main Content with Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-8 bg-card/80 backdrop-blur-sm border-2 border-border rounded-2xl p-2">
+              <TabsList className="grid w-full grid-cols-4 mb-8 bg-card/80 border border-border rounded-2xl p-2">
                 <TabsTrigger 
                   value="applications" 
                   className="rounded-xl font-semibold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -200,12 +200,12 @@ export default function InternshipTrackerPage() {
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                     <Input
                       placeholder="Search applications by company, position, or status..."
-                      className="pl-12 h-14 bg-card/80 backdrop-blur-sm border-2 border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-2xl text-lg"
+                      className="pl-12 h-14 bg-card/80 border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-2xl text-lg"
                     />
                   </div>
                   <Button
                     variant="outline"
-                    className="h-14 px-8 border-2 border-primary/30 bg-card/80 backdrop-blur-sm text-primary hover:bg-primary/10 rounded-2xl font-semibold"
+                    className="h-14 px-8 border border-primary/30 bg-card/80 text-primary hover:bg-primary/10 rounded-2xl font-semibold"
                   >
                     <Filter className="w-5 h-5 mr-2" />
                     Filter & Sort
@@ -221,9 +221,9 @@ export default function InternshipTrackerPage() {
 
                 {/* Add New Application CTA */}
                 <div className="mt-16 text-center">
-                  <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-3xl p-12 border-2 border-primary/20 shadow-xl">
+                  <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-3xl p-12 border border-primary/20">
                     <div className="max-w-2xl mx-auto">
-                      <h3 className="text-3xl font-black mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                      <h3 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                         Ready to apply to more internships?
                       </h3>
                       <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
@@ -232,7 +232,7 @@ export default function InternshipTrackerPage() {
                       <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                           size="lg"
-                          className="btn-primary text-primary-foreground px-8 py-4 text-lg font-semibold rounded-2xl shadow-lg"
+                          className="btn-primary text-primary-foreground px-8 py-4 text-lg font-semibold rounded-2xl"
                         >
                           <Plus className="w-5 h-5 mr-2" />
                           Add New Application
@@ -240,7 +240,7 @@ export default function InternshipTrackerPage() {
                         <Button
                           size="lg"
                           variant="outline"
-                          className="border-2 border-primary/30 text-primary hover:bg-primary/10 px-8 py-4 text-lg font-semibold rounded-2xl bg-card"
+                          className="border border-primary/30 text-primary hover:bg-primary/10 px-8 py-4 text-lg font-semibold rounded-2xl bg-card"
                         >
                           Browse Opportunities
                         </Button>
@@ -272,17 +272,17 @@ export default function InternshipTrackerPage() {
 // Application Card Component
 function ApplicationCard({ internship }: { internship: any }) {
   return (
-    <Card className="bg-card/90 backdrop-blur-sm border-2 border-border hover:border-primary/50 shadow-lg hover:shadow-2xl transition-all duration-300 rounded-3xl overflow-hidden feature-card">
-      <CardHeader className="p-8">
+    <Card className="bg-card/90 border border-border hover:border-primary/50 transition-all duration-300 rounded-3xl overflow-hidden feature-card">
+      <CardHeader className="p-5">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-6">
             {/* Company Logo */}
-            <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-primary-foreground font-black text-xl">{internship.logo}</span>
+            <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
+              <span className="text-primary-foreground font-semibold text-xl">{internship.logo}</span>
             </div>
 
             <div className="flex-1">
-              <CardTitle className="text-foreground text-2xl mb-2 font-black">
+              <CardTitle className="text-foreground text-2xl mb-2 font-semibold">
                 {internship.position}
               </CardTitle>
               <div className="flex items-center text-muted-foreground mb-3">
@@ -297,7 +297,7 @@ function ApplicationCard({ internship }: { internship: any }) {
 
           <Badge
             variant="outline"
-            className={`px-4 py-2 text-sm font-bold rounded-xl border-2 ${
+            className={`px-4 py-2 text-sm font-bold rounded-xl border ${
               internship.status === "offer"
                 ? "text-green-400 border-green-500/30 bg-green-500/10"
                 : internship.status === "interview"
@@ -370,13 +370,13 @@ function ApplicationCard({ internship }: { internship: any }) {
             <Button
               variant="outline"
               size="sm"
-              className="border-2 border-border bg-card hover:bg-muted/50 text-foreground font-semibold px-6 py-2 rounded-xl"
+              className="border border-border bg-card hover:bg-muted/50 text-foreground font-semibold px-6 py-2 rounded-xl"
             >
               View Details
             </Button>
             <Button
               size="sm"
-              className="btn-primary text-primary-foreground font-semibold px-6 py-2 rounded-xl shadow-lg"
+              className="btn-primary text-primary-foreground font-semibold px-6 py-2 rounded-xl"
             >
               Update Status
             </Button>

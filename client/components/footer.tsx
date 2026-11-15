@@ -1,12 +1,22 @@
+import Link from "next/link"
+
 export function Footer() {
   return (
-    <footer className="py-8 mt-16 border-t border-border">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Ready to start your developer journey?</h2>
-        <p className="text-muted-foreground">
-          Join thousands of developers who have built their careers with CodeArena.
-        </p>
-      </div>
+    <footer className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-border py-6 text-sm text-muted-foreground">
+      <span className="font-mono text-xs">
+        code<span className="text-primary">arena</span> · online judge
+      </span>
+      <nav className="flex gap-5">
+        <Link href="/practice" className="hover:text-foreground">
+          Problems
+        </Link>
+        <Link href="/code-editor" className="hover:text-foreground">
+          Playground
+        </Link>
+        <Link href="/leaderboard" className="hover:text-foreground">
+          Leaderboard
+        </Link>
+      </nav>
     </footer>
   )
 }

@@ -46,11 +46,11 @@ export default function LoginPage() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-gradient-main min-h-screen">
-          <Card className="w-full max-w-md bg-card/90 backdrop-blur-sm border-2 border-border shadow-lg rounded-3xl dark:glow-purple">
+        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-gradient-main min-h-[calc(100vh-3rem)]">
+          <Card className="w-full max-w-md bg-card/90 border border-border rounded-3xl dark:glow-purple">
             <CardHeader className="text-center p-6 sm:p-8">
-              <CardTitle className="text-3xl sm:text-4xl font-black text-foreground mb-2">Welcome Back!</CardTitle>
-              <CardDescription className="text-muted-foreground text-base sm:text-lg">
+              <CardTitle className="text-2xl font-semibold tracking-tight text-foreground mb-2">Welcome Back!</CardTitle>
+              <CardDescription className="text-muted-foreground text-sm">
                 Sign in to your CodeArena account
               </CardDescription>
             </CardHeader>
@@ -67,7 +67,7 @@ export default function LoginPage() {
                     required
                     value={form.username}
                     onChange={(e) => setForm({ ...form, username: e.target.value })}
-                    className="h-12 bg-card border-2 border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
+                    className="h-10 bg-card border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
                   />
                 </div>
                 <div className="space-y-2">
@@ -85,14 +85,14 @@ export default function LoginPage() {
                     required
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
-                    className="h-12 bg-card border-2 border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
+                    className="h-10 bg-card border border-border text-foreground placeholder-muted-foreground focus:border-primary/50 rounded-xl text-base"
                   />
                 </div>
 
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full btn-primary text-primary-foreground font-semibold py-3 sm:py-4 rounded-2xl shadow-lg text-base sm:text-lg"
+                  className="w-full btn-primary text-primary-foreground font-semibold h-10 rounded-md text-sm"
                 >
                   {loading ? "Logging in..." : "Login"}
                 </Button>

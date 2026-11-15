@@ -11,14 +11,10 @@ const jwtpasskey = process.env.JWT_PASSKEY;
 // Get user's submission history
 export async function getUserSubmissions(req, res) {
   try {
-    console.log('getUserSubmissions called');
-    console.log('Request headers:', req.headers);
-    
     // Get token from header instead of body for GET request
-    const authHeader = req.headers.usertoken;
+    const authHeader = req.headers.authorization || req.headers.usertoken;
     
     if (!authHeader) {
-      console.log('No usertoken provided in headers');
       return res.status(400).json({
         success: false,
         error: 'Authentication token required'
@@ -28,22 +24,18 @@ export async function getUserSubmissions(req, res) {
     // Remove 'Bearer ' prefix if present
     const usertoken = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : authHeader;
 
-    console.log('Verifying JWT token...');
     // Verify JWT token
     const decode = jwt.verify(usertoken, jwtpasskey);
     
     if (!decode) {
-      console.log('JWT verification failed');
       return res.status(401).json({
         success: false,
         error: 'Invalid authentication token'
       });
     }
 
-    console.log('JWT verified, user ID:', decode.id);
     const userId = decode.id;
 
-    console.log('Querying database for submissions...');
     // Get user's submissions with problem details - simplified query first
     const submissions = await prisma.solve.findMany({
       where: {
@@ -61,23 +53,27 @@ export async function getUserSubmissions(req, res) {
       orderBy: {
         date: 'desc'  // Use 'date' field instead of 'submittedAt' initially
       },
-      take: 10  // Limit to 10 results for testing
+      take: 100
     });
-
-    console.log('Found submissions:', submissions.length);
 
     // Return simplified response for testing
     res.json({
       success: true,
       data: {
-        submissions: submissions,
+        // `verdict` is derived from the stored result: AC, WA, TLE, MLE, RE or CE.
+        submissions: submissions.map((s) => ({
+          ...s,
+          verdict: s.success ? 'AC' : (s.error || 'WA').slice(0, 3).replace(/[^A-Z]/g, '') || 'WA',
+        })),
         statistics: {
           totalSubmissions: submissions.length,
           successfulSubmissions: submissions.filter(s => s.success).length,
           successRate: submissions.length > 0 ? ((submissions.filter(s => s.success).length / submissions.length) * 100).toFixed(1) : '0',
           uniqueProblemsSolved: [...new Set(submissions.filter(s => s.success).map(s => s.problemId))].length,
           totalProblems: [...new Set(submissions.map(s => s.problemId))].length,
-          averageExecutionTime: 150 // Placeholder
+          averageExecutionTime: submissions.length > 0
+            ? Math.round(submissions.reduce((sum, s) => sum + (s.executionTime || 0), 0) / submissions.length)
+            : 0
         }
       }
     });
@@ -97,7 +93,7 @@ export async function getSubmissionDetails(req, res) {
     const { submissionId } = req.params;
     
     // Get token from header instead of body for GET request
-    const authHeader = req.headers.usertoken;
+    const authHeader = req.headers.authorization || req.headers.usertoken;
     
     if (!authHeader) {
       return res.status(400).json({

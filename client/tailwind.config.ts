@@ -41,6 +41,21 @@ const config: Config = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        easy: "hsl(var(--easy))",
+        medium: "hsl(var(--medium))",
+        hard: "hsl(var(--hard))",
+        editor: {
+          DEFAULT: "hsl(var(--editor))",
+          foreground: "hsl(var(--editor-foreground))",
+        },
+        verdict: {
+          ac: "hsl(var(--verdict-ac))",
+          wa: "hsl(var(--verdict-wa))",
+          tle: "hsl(var(--verdict-tle))",
+          mle: "hsl(var(--verdict-mle))",
+          re: "hsl(var(--verdict-re))",
+          ce: "hsl(var(--verdict-ce))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -116,13 +131,19 @@ const config: Config = {
         },
       },
       borderRadius: {
+        // The whole scale is tightened: pages written with rounded-2xl/3xl
+        // collapse to the same compact panel radius.
+        "3xl": "calc(var(--radius) + 4px)",
+        "2xl": "calc(var(--radius) + 2px)",
+        xl: "calc(var(--radius) + 2px)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        display: ["Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],
+        display: ["var(--font-sans)", "Inter", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       keyframes: {
         "accordion-down": {

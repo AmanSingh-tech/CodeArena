@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import getTestCases from '../Functions/get_testcases.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 
 const route = Router();
@@ -155,10 +159,10 @@ route.post('/problems', async (req, res) => {
   }
 });
 
-// Create a problem with test cases and tags (enhanced version for frontend)
+// Create a problem with test cases and tags (used by the "New problem" dialog)
 route.post('/createProblem', async (req, res) => {
   const { title, description, difficulty, tags = [], testCases = [] } = req.body;
-  const usertoken = req.headers.usertoken;
+  const rawToken = req.headers.authorization || req.headers.usertoken;
 
   if (!title || !description || !difficulty) {
     return res.status(400).json({
@@ -167,7 +171,7 @@ route.post('/createProblem', async (req, res) => {
     });
   }
 
-  if (!usertoken || !usertoken.startsWith('Bearer ')) {
+  if (!rawToken || !rawToken.startsWith('Bearer ')) {
     return res.status(401).json({
       success: false,
       message: "Authentication token required"
@@ -175,71 +179,62 @@ route.post('/createProblem', async (req, res) => {
   }
 
   try {
-    // Create the problem first
-    const createdProblem = await prisma.problem.create({
-      data: {
-        title: title.trim(),
-        description: description.trim(),
-        difficulty: difficulty.toLowerCase(),
-        constraints: "",
-        inputtype: ""
-      }
+    jwt.verify(rawToken.slice(7), process.env.JWT_PASSKEY);
+  } catch {
+    return res.status(401).json({
+      success: false,
+      message: "Please log in again"
     });
+  }
 
-    // Create test cases if provided
-    if (testCases && testCases.length > 0) {
-      for (let i = 0; i < testCases.length; i++) {
-        const testCase = testCases[i];
-        await prisma.testCase.create({
-          data: {
-            problemId: createdProblem.id,
-            input: testCase.input || "",
-            output: testCase.output || "",
-            explanation: testCase.explanation || "",
-            sampleTC: i < 2 // First two test cases are sample cases
-          }
+  // Stored as Easy / Medium / Hard, the form the rest of the app compares against.
+  const level = String(difficulty).trim().toLowerCase();
+  const normalizedDifficulty = level === 'hard' ? 'Hard' : level === 'medium' ? 'Medium' : 'Easy';
+
+  const validTestCases = (Array.isArray(testCases) ? testCases : [])
+    .filter((tc) => tc && typeof tc.output === 'string' && tc.output.trim() !== '')
+    .map((tc) => ({ input: String(tc.input ?? ''), output: tc.output }));
+
+  const tagNames = [...new Set(
+    (Array.isArray(tags) ? tags : [])
+      .map((t) => String(t).trim().toLowerCase())
+      .filter(Boolean)
+  )];
+
+  try {
+    const createdProblem = await prisma.$transaction(async (tx) => {
+      const problem = await tx.problem.create({
+        data: {
+          title: title.trim(),
+          description: description.trim(),
+          difficulty: normalizedDifficulty,
+          constraints: "",
+          inputtype: ""
+        }
+      });
+
+      if (validTestCases.length > 0) {
+        await tx.testCase.createMany({
+          data: validTestCases.map((tc) => ({ ...tc, problemId: problem.id }))
         });
       }
-    }
 
-    // Create tags if provided
-    if (tags && tags.length > 0) {
-      for (const tagName of tags) {
-        if (tagName.trim()) {
-          // Find or create tag
-          let tag = await prisma.tag.findFirst({
-            where: { tagName: tagName.trim().toLowerCase() }
-          });
-
-          if (!tag) {
-            tag = await prisma.tag.create({
-              data: { tagName: tagName.trim().toLowerCase() }
-            });
-          }
-
-          // Create problem-tag relationship
-          await prisma.problemTag.create({
-            data: {
-              problemId: createdProblem.id,
-              tagId: tag.id
-            }
-          });
+      for (const tagName of tagNames) {
+        let tag = await tx.problem_Tags.findFirst({ where: { tagName } });
+        if (!tag) {
+          tag = await tx.problem_Tags.create({ data: { tagName } });
         }
+        await tx.problemToTags.create({ data: { pid: problem.id, tid: tag.id } });
       }
-    }
 
-    // Fetch the complete problem with relations
+      return problem;
+    });
+
     const completeNewProblem = await prisma.problem.findUnique({
       where: { id: createdProblem.id },
       include: {
-        testCases: {
-          orderBy: { id: 'asc' }
-        },
-        tags: {
-          include: {
-            tag: true
-          }
-        }
+        testCases: { orderBy: { id: 'asc' } },
+        tags: { include: { tag: true } }
       }
     });
 

@@ -11,91 +11,151 @@ const route = Router();
 const prisma = new PrismaClient();
 const jwtpasskey = process.env.JWT_PASSKEY;
 
+const COMPILER_URL = () => process.env.COMPILER_SERVICE_URL || 'http://localhost:3002';
+const MAX_CODE_LENGTH = 64 * 1024;
+// How many leading test cases are public samples (matches GET /problem/:id).
+const SAMPLE_TEST_COUNT = 2;
+
+const VERDICT_LABELS = {
+  AC: 'Accepted',
+  WA: 'Wrong Answer',
+  TLE: 'Time Limit Exceeded',
+  MLE: 'Memory Limit Exceeded',
+  RE: 'Runtime Error',
+  CE: 'Compilation Error',
+};
+
+// Token may arrive as `Authorization: Bearer`, the legacy `usertoken` header,
+// or the legacy `usertoken` body field.
+function readToken(req) {
+  const raw = req.headers.authorization || req.headers.usertoken || req.body?.usertoken;
+  if (!raw || typeof raw !== 'string') return null;
+  return raw.startsWith('Bearer ') ? raw.slice(7) : raw;
+}
+
+async function callCompiler(path, payload) {
+  const response = await axios.post(`${COMPILER_URL()}${path}`, payload, {
+    timeout: 120000,
+    maxBodyLength: Infinity,
+    // 503 = judge queue full; handled by the caller rather than thrown.
+    validateStatus: (status) => status < 500 || status === 503,
+  });
+  return response;
+}
+
+function sortTestCases(testCases) {
+  // Stable order so "the first two" always means the same samples.
+  return [...testCases].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+}
+
+// Run against a problem's test cases without recording a submission.
 route.post('/run/:pid', async (req, res) => {
   const { code, language } = req.body;
   const { pid } = req.params;
-    
+
   if (!pid || !code || !language) {
     return res.json({
       success: false,
-      errorcode:1,
+      errorcode: 1,
       msg: "Send All Parameters",
-      err:"Send All Parameters"
+      err: "Send All Parameters"
     });
   }
 
-  try {
-    const problem = await getTestCases(pid)
+  if (code.length > MAX_CODE_LENGTH) {
+    return res.json({ success: false, errorcode: 1, msg: "Code is too long", err: "Code is too long" });
+  }
 
-    if (problem.success==false) {
+  try {
+    const problem = await getTestCases(pid);
+
+    if (problem.success == false) {
       return res.json({
         success: false,
-        errorcode:2,
+        errorcode: 2,
         msg: "P_id does not exist or is in-valid",
-        err:"P_id does not exist or is in-valid"
+        err: "P_id does not exist or is in-valid"
       });
     }
 
-    const testCases = problem.testCases;
-
-    for (let i = 0; i < testCases.length; i++) {
-      const test = testCases[i];
-
-      try {
-        const response = await axios.post(`${process.env.COMPILER_SERVICE_URL || 'http://localhost:3002'}/run`, {
-          code,
-          language,
-          inputs: test.input,
-          mode: "compiler",
-        });
-
-        if (!response.data.success) {
-          return res.json({
-            success: false,
-            errorcode:3,
-            msg: "Compilation Failed",
-            err: response.data.error,
-            failedTestCase: i,
-            totalTestCases: testCases.length,
-          });
-        }
-
-        if (response.data.verdict.trim() !== test.output.trim()) {
-          return res.json({
-            success: false,
-            errorcode:4,
-            msg: `Failed at Test Case ${i + 1}`,
-            testcase:test.input,
-            expected: test.output.trim() || "",
-            received: response.data.verdict.trim() || "",
-            failedTestCase: i + 1,
-            totalTestCases: testCases.length,
-          });
-        }
-
-      } catch (err) {
-    
-        return res.json({
-          success: false,
-          errorcode:5,
-          msg: `Error while running test case ${i + 1}`,
-          err: err.message,
-        });
-      }
+    const testCases = sortTestCases(problem.testCases);
+    if (testCases.length === 0) {
+      return res.json({ success: true, msg: "No test cases for this problem", totalTestCases: 0 });
     }
 
-    // All test cases passed
+    let response;
+    try {
+      response = await callCompiler('/judge', {
+        code,
+        language,
+        testCases: testCases.map((t) => ({ input: t.input, output: t.output })),
+        stopOnFail: true,
+      });
+    } catch (err) {
+      return res.json({
+        success: false,
+        errorcode: 5,
+        msg: "Judge is unavailable",
+        err: err.message,
+      });
+    }
+
+    const result = response.data;
+    if (response.status === 503 || !result.success) {
+      return res.json({
+        success: false,
+        errorcode: 5,
+        msg: response.status === 503 ? "Judge is busy, try again shortly" : "Judge error",
+        err: result.error || "Judge error",
+      });
+    }
+
+    if (result.verdict === 'CE') {
+      return res.json({
+        success: false,
+        errorcode: 3,
+        msg: "Compilation Failed",
+        err: result.compileError,
+        verdict: 'CE',
+        failedTestCase: 0,
+        totalTestCases: testCases.length,
+      });
+    }
+
+    if (result.verdict !== 'AC') {
+      const failed = result.results[result.results.length - 1];
+      const test = testCases[failed.test - 1];
+      const isSample = failed.test <= SAMPLE_TEST_COUNT;
+      return res.json({
+        success: false,
+        errorcode: 4,
+        msg: `${VERDICT_LABELS[failed.verdict]} on Test Case ${failed.test}`,
+        verdict: failed.verdict,
+        // Hidden tests are not revealed; only the public samples are echoed back.
+        testcase: isSample ? test.input : "(hidden test case)",
+        expected: isSample ? (test.output || "").trim() : "(hidden)",
+        received: isSample ? (failed.stdout || "").trim() : "(hidden)",
+        err: failed.stderr || "",
+        failedTestCase: failed.test,
+        totalTestCases: testCases.length,
+        executionTime: failed.timeMs,
+        memoryKb: failed.memoryKb,
+      });
+    }
+
     return res.json({
       success: true,
       msg: "All Test Cases Passed",
+      verdict: 'AC',
       totalTestCases: testCases.length,
+      executionTime: result.maxTimeMs,
+      memoryKb: result.maxMemoryKb,
     });
 
   } catch (error) {
-    // console.error("Server error:", error);
     return res.status(500).json({
       success: false,
-      errorcode:6,
+      errorcode: 6,
       msg: "Internal Server Error",
       err: error.message,
     });
@@ -103,10 +163,11 @@ route.post('/run/:pid', async (req, res) => {
 });
 
 
-// Enhanced Submission Route - Tests code against all test cases
+// Judge a submission against every test case and record the result.
 route.post('/submit/:pid', async (req, res) => {
   const { pid } = req.params;
-  const { usertoken, code, language } = req.body;
+  const { code, language } = req.body;
+  const usertoken = readToken(req);
 
   if (!pid || !usertoken || !code || !language) {
     return res.json({
@@ -116,21 +177,24 @@ route.post('/submit/:pid', async (req, res) => {
     });
   }
 
+  if (code.length > MAX_CODE_LENGTH) {
+    return res.json({ success: false, msg: "Code is too long", error: "Code is too long" });
+  }
+
   try {
-    // Verify JWT token
-    const decode = jwt.verify(usertoken, jwtpasskey);
-    
-    if (!decode) {
+    let decode;
+    try {
+      decode = jwt.verify(usertoken, jwtpasskey);
+    } catch {
       return res.json({
         success: false,
-        msg: "User Id Invalid",
+        msg: "Please log in again",
         error: "Invalid authentication token"
       });
     }
 
     const uid = decode.id;
 
-    // Verify user exists
     const auth_user = await prisma.user.findFirst({
       where: { id: uid }
     });
@@ -143,7 +207,6 @@ route.post('/submit/:pid', async (req, res) => {
       });
     }
 
-    // Get problem and test cases
     const problem = await getTestCases(pid);
 
     if (!problem.success) {
@@ -154,80 +217,77 @@ route.post('/submit/:pid', async (req, res) => {
       });
     }
 
-    const testCases = problem.testCases;
-    let passedTests = 0;
-    let totalTests = testCases.length;
-    let testResults = [];
-    let executionTime = 0;
-    let memoryUsed = 0;
-
-    // Run code against all test cases
-    for (let i = 0; i < testCases.length; i++) {
-      const test = testCases[i];
-      
-      try {
-        const startTime = Date.now();
-        const response = await axios.post(`${process.env.COMPILER_SERVICE_URL || 'http://localhost:3002'}/run`, {
-          code,
-          language,
-          inputs: test.input,
-          mode: "compiler",
-        });
-        
-        const endTime = Date.now();
-        executionTime = Math.max(executionTime, endTime - startTime);
-
-        const data = response.data;
-        
-        if (data.success) {
-          const actualOutput = data.output?.trim() || "";
-          const expectedOutput = test.output?.trim() || "";
-          
-          const testPassed = actualOutput === expectedOutput;
-          
-          if (testPassed) {
-            passedTests++;
-          }
-          
-          testResults.push({
-            testCase: i + 1,
-            passed: testPassed,
-            expected: expectedOutput,
-            actual: actualOutput,
-            input: test.input,
-            executionTime: endTime - startTime
-          });
-          
-        } else {
-          // Compilation or runtime error
-          testResults.push({
-            testCase: i + 1,
-            passed: false,
-            error: data.error || "Runtime error",
-            input: test.input,
-            executionTime: endTime - startTime
-          });
-        }
-        
-      } catch (compilerError) {
-        testResults.push({
-          testCase: i + 1,
-          passed: false,
-          error: `Compiler service error: ${compilerError.message}`,
-          input: test.input,
-          executionTime: 0
-        });
-      }
+    const testCases = sortTestCases(problem.testCases);
+    if (testCases.length === 0) {
+      return res.json({
+        success: false,
+        msg: "This problem has no test cases yet",
+        error: "Problem has no test cases"
+      });
     }
 
-    // Determine if submission is successful
-    const isSuccessful = passedTests === totalTests;
+    let response;
+    try {
+      response = await callCompiler('/judge', {
+        code,
+        language,
+        testCases: testCases.map((t) => ({ input: t.input, output: t.output })),
+      });
+    } catch (err) {
+      return res.json({
+        success: false,
+        msg: "Judge is unavailable, your submission was not recorded",
+        error: `Compiler service error: ${err.message}`
+      });
+    }
+
+    const result = response.data;
+    if (response.status === 503 || !result.success) {
+      return res.json({
+        success: false,
+        msg: response.status === 503 ? "Judge is busy, try again shortly" : "Judge error",
+        error: result.error || "Judge error"
+      });
+    }
+
+    const verdict = result.verdict;
+    const isSuccessful = verdict === 'AC';
+    const totalTests = testCases.length;
+    const passedTests = result.passed || 0;
+    const executionTime = result.maxTimeMs || 0;
+    const memoryKb = result.maxMemoryKb || 0;
     const accuracy = totalTests > 0 ? (passedTests / totalTests) * 100 : 0;
 
-    // Save submission to database
+    const testResults = (result.results || []).map((r) => {
+      const test = testCases[r.test - 1];
+      const isSample = r.test <= SAMPLE_TEST_COUNT;
+      return {
+        testCase: r.test,
+        passed: r.verdict === 'AC',
+        verdict: r.verdict,
+        executionTime: r.timeMs,
+        memoryKb: r.memoryKb,
+        // Only public samples expose their data.
+        ...(isSample
+          ? {
+              input: test.input,
+              expected: (test.output || "").trim(),
+              actual: (r.stdout || "").trim(),
+              error: r.stderr || undefined,
+            }
+          : {}),
+      };
+    });
+
     const submission = await prisma.solve.create({
       data: {
         success: isSuccessful,
+        // The verdict (and compiler output, if any) is kept in the existing `error` column.
+        error: isSuccessful
+          ? null
+          : verdict === 'CE'
+            ? `CE: ${(result.compileError || '').slice(0, 2000)}`
+            : verdict,
         code: code,
         language: language,
         problemId: pid,
@@ -239,26 +299,24 @@ route.post('/submit/:pid', async (req, res) => {
       }
     });
 
-    if (!submission) {
-      return res.json({
-        success: false,
-        msg: "Error saving submission",
-        error: "Database error"
-      });
-    }
-
-    // Return detailed results
     return res.json({
       success: true,
       accepted: isSuccessful,
-      msg: isSuccessful ? "Submission Successful - All tests passed!" : "Submission Failed - Some tests failed",
+      verdict,
+      submissionId: submission.id,
+      msg: isSuccessful
+        ? "Submission Successful - All tests passed!"
+        : `Submission Failed - ${VERDICT_LABELS[verdict] || 'Some tests failed'}`,
       results: {
         passedTests,
         totalTests,
         accuracy: Math.round(accuracy * 100) / 100,
         executionTime,
-        testResults: testResults.slice(0, 5), // Show only first 5 test results
-        status: isSuccessful ? "Accepted" : "Wrong Answer"
+        memoryKb,
+        verdict,
+        status: VERDICT_LABELS[verdict] || "Wrong Answer",
+        compileError: result.compileError || null,
+        testResults,
       }
     });
 
@@ -272,10 +330,10 @@ route.post('/submit/:pid', async (req, res) => {
   }
 });
 
-// Simple run endpoint for code editor (no problem ID required)
+// Run code against custom input (playground and "Run" in the solve view).
 route.post('/run', async (req, res) => {
   const { code, language, inputs = "" } = req.body;
-    
+
   if (!code || !language) {
     return res.json({
       success: false,
@@ -283,15 +341,22 @@ route.post('/run', async (req, res) => {
     });
   }
 
-  try {
-    const response = await axios.post(`${process.env.COMPILER_SERVICE_URL || 'http://localhost:3002'}/run`, {
-      code,
-      language,
-      inputs,
-      mode: "compiler",
-    });
+  if (code.length > MAX_CODE_LENGTH) {
+    return res.json({ success: false, error: "Code is too long", err: "Code is too long", output: "" });
+  }
 
+  try {
+    const response = await callCompiler('/run', { code, language, inputs });
     const data = response.data;
+
+    if (response.status === 503) {
+      return res.json({
+        success: false,
+        error: "Judge is busy, try again shortly",
+        err: "Judge is busy, try again shortly",
+        output: ""
+      });
+    }
 
     if (data.success) {
       return res.json({
@@ -299,7 +364,10 @@ route.post('/run', async (req, res) => {
         output: data.verdict || "Code executed successfully!",
         verdict: data.verdict || "Execution completed",
         err: data.err || "",
-        error: data.err || ""
+        error: data.err || "",
+        status: data.status || "OK",
+        executionTime: data.timeMs ?? null,
+        memoryKb: data.memoryKb ?? null,
       });
     } else {
       return res.json({

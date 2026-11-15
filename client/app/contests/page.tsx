@@ -11,7 +11,7 @@ import { Calendar, Clock, Users, Trophy } from "lucide-react"
 
 function SkeletonCard() {
   return (
-    <div className="animate-pulse bg-card/80 backdrop-blur-sm border-2 border-border rounded-3xl p-8 space-y-6 shadow-lg">
+    <div className="animate-pulse bg-card/80 border border-border rounded-3xl p-5 space-y-6">
       <div className="flex justify-between items-center">
         <div className="h-8 bg-gray-400 rounded w-48"></div>
         <div className="h-6 bg-gray-400 rounded w-20"></div>
@@ -99,7 +99,7 @@ export default function ContestsPage() {
   }, [])
 
   if (error) {
-    return <div className="p-8 text-center text-red-500">Error: {error}</div>
+    return <div className="p-5 text-center text-red-500">Error: {error}</div>
   }
 
   const activeContestsCount = contests.filter(c => c.status === "live").length
@@ -113,18 +113,18 @@ export default function ContestsPage() {
         <Header />
         <main className="flex-1 p-6 lg:p-8 bg-gradient-main min-h-screen">
           <div className="w-full">
-            <div className="mb-12">
-              <h1 className="text-5xl font-black mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            <div className="mb-6">
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1">
                 Coding Contests
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl">
+              <p className="text-sm text-muted-foreground max-w-2xl">
                 Compete with developers worldwide and showcase your skills in exciting programming challenges
               </p>
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card dark:glow-purple">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-purple">
                 <CardHeader>
                   <CardTitle className="text-foreground flex items-center font-bold">
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mr-4">
@@ -134,14 +134,14 @@ export default function ContestsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-primary">
+                  <div className="text-3xl font-semibold font-mono text-primary">
                     {loading ? <div className="h-12 w-24 bg-gray-400 rounded animate-pulse"></div> : activeContestsCount}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">Live competitions</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card dark:glow-blue">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card dark:glow-blue">
                 <CardHeader>
                   <CardTitle className="text-foreground flex items-center font-bold">
                     <div className="w-12 h-12 bg-accent/20 rounded-2xl flex items-center justify-center mr-4">
@@ -151,14 +151,14 @@ export default function ContestsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-accent">
+                  <div className="text-3xl font-semibold font-mono text-accent">
                     {loading ? <div className="h-12 w-32 bg-gray-400 rounded animate-pulse"></div> : totalParticipants.toLocaleString()}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">Active competitors</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/80 backdrop-blur-sm border-2 border-border shadow-lg hover:shadow-xl transition-all rounded-3xl feature-card">
+              <Card className="bg-card/80 border border-border transition-all rounded-3xl feature-card">
                 <CardHeader>
                   <CardTitle className="text-foreground flex items-center font-bold">
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mr-4">
@@ -168,7 +168,7 @@ export default function ContestsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black text-primary">
+                  <div className="text-3xl font-semibold font-mono text-primary">
                     {loading ? <div className="h-12 w-16 bg-gray-400 rounded animate-pulse"></div> : upcomingEventsCount}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">Upcoming events</div>
@@ -188,24 +188,24 @@ export default function ContestsPage() {
                 contests.map((contest) => (
                   <Card
                     key={contest.id}
-                    className="bg-card/90 backdrop-blur-sm border-2 border-border hover:border-primary/50 shadow-lg hover:shadow-2xl transition-all duration-300 rounded-3xl feature-card"
+                    className="bg-card/90 border border-border hover:border-primary/50 transition-all duration-300 rounded-3xl feature-card"
                   >
-                    <CardHeader className="p-8">
+                    <CardHeader className="p-5">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center space-x-4 mb-4">
-                            <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+                            <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center">
                               <Trophy className="w-8 h-8 text-primary-foreground" />
                             </div>
                             <div>
-                              <CardTitle className="text-foreground text-2xl mb-2 font-black">{contest.title}</CardTitle>
+                              <CardTitle className="text-foreground text-2xl mb-2 font-semibold">{contest.title}</CardTitle>
                               <CardDescription className="text-muted-foreground text-base">{contest.description || contest.title}</CardDescription>
                             </div>
                           </div>
                         </div>
                         <Badge
                           variant="outline"
-                          className={`px-4 py-2 text-sm font-bold rounded-xl border-2 ${
+                          className={`px-4 py-2 text-sm font-bold rounded-xl border ${
                             contest.status === "live"
                               ? "text-red-400 border-red-500/30 bg-red-500/10 animate-pulse"
                               : contest.status === "upcoming"
@@ -259,7 +259,7 @@ export default function ContestsPage() {
                       <div className="flex items-center justify-between pt-4 border-t border-border">
                         <Badge
                           variant="outline"
-                          className={`px-4 py-2 font-semibold rounded-xl border-2 ${
+                          className={`px-4 py-2 font-semibold rounded-xl border ${
                             contest.difficulty === "Easy"
                               ? "text-green-400 border-green-500/30 bg-green-500/10"
                               : contest.difficulty === "Medium"
@@ -270,7 +270,7 @@ export default function ContestsPage() {
                           {contest.difficulty}
                         </Badge>
                         <Button
-                          className="btn-primary text-primary-foreground font-semibold px-8 py-3 rounded-2xl shadow-lg"
+                          className="btn-primary text-primary-foreground font-semibold px-8 py-3 rounded-2xl"
                           disabled={contest.status === "completed"}
                           onClick={() => window.open(`https://codeforces.com/contests/${contest.id}`, "_blank")}
                         >

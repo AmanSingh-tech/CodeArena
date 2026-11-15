@@ -28,6 +28,7 @@ services:
       JWT_PASSKEY: your-super-secret-jwt-key-change-this-in-production
       SALT_ROUNDS: 10
       GOOGLE_GEMINI_API_KEY: your-google-gemini-api-key
+      COMPILER_SERVICE_URL: http://compiler:3002
     ports:
       - "8000:3001"
     depends_on:

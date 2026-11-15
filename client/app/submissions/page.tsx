@@ -1,29 +1,20 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  Code, 
-  TrendingUp, 
-  Target,
-  Calendar,
-  Trophy,
-  BarChart3
-} from 'lucide-react';
-import { getUserSubmissions } from '@/lib/api';
+import { getStoredToken, getUserSubmissions } from '@/lib/api';
 import { Header } from "@/components/header";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset } from "@/components/ui/sidebar";
+import { DifficultyLabel, PageHeader, StatTile, VerdictBadge } from "@/components/judge-ui";
+import { formatTime, getLanguage, verdictOf } from "@/lib/judge";
 
 interface Submission {
   id: string;
   success: boolean;
+  error?: string | null;
+  verdict?: string;
   code: string;
   language: string;
   date: string;
@@ -47,268 +38,167 @@ interface SubmissionStats {
   averageExecutionTime: number;
 }
 
+const formatDate = (dateString: string) =>
+  new Date(dateString).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
 export default function SubmissionsPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [stats, setStats] = useState<SubmissionStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadSubmissions();
-  }, []);
+  const [needsLogin, setNeedsLogin] = useState(false);
+  const [open, setOpen] = useState<string | null>(null);
 
   const loadSubmissions = async () => {
+    setLoading(true);
+    setError(null);
+    const token = getStoredToken();
+    if (!token) {
+      setNeedsLogin(true);
+      setLoading(false);
+      return;
+    }
     try {
-      setLoading(true);
-      setError(null); // Clear previous errors
-      const usertoken = localStorage.getItem('token'); // Fixed: use 'token' instead of 'usertoken'
-      
-      if (!usertoken) {
-        setError('Please log in to view your submissions');
-        return;
-      }
-
-      console.log('Fetching submissions for user...'); // Debug log
-      const response = await getUserSubmissions(usertoken);
-      console.log('Submissions response:', response); // Debug log
-      
+      const response = await getUserSubmissions(token);
       if (response.success) {
         setSubmissions(response.data.submissions);
         setStats(response.data.statistics);
-        setError(null);
       } else {
         setError(response.error || 'Failed to load submissions');
-        console.error('API Error:', response.error);
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load submissions';
-      setError(errorMessage);
-      console.error('Submissions error:', err);
+    } catch {
+      setError('Could not reach the server.');
     } finally {
       setLoading(false);
     }
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty.toLowerCase()) {
-      case 'easy': return 'bg-green-500';
-      case 'medium': return 'bg-yellow-500';
-      case 'hard': return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  if (loading) {
-    return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <Header />
-          <main className="flex-1 bg-gradient-main min-h-screen">
-            <div className="container mx-auto p-6">
-              <div className="mb-8">
-                <h1 className="text-3xl font-bold">My Submissions</h1>
-                <p className="text-muted-foreground">Loading your submission history...</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[1, 2, 3, 4].map((i) => (
-                  <Card key={i} className="animate-pulse">
-                    <CardContent className="p-6">
-                      <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                      <div className="h-8 bg-gray-200 rounded"></div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </main>
-        </SidebarInset>
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <>
-        <AppSidebar />
-        <SidebarInset>
-          <Header />
-          <main className="flex-1 bg-gradient-main min-h-screen">
-            <div className="container mx-auto p-6">
-              <div className="mb-8">
-                <h1 className="text-3xl font-bold">My Submissions</h1>
-                <p className="text-red-500 mb-4">{error}</p>
-                <Button onClick={loadSubmissions} variant="outline">
-                  Try Again
-                </Button>
-              </div>
-            </div>
-          </main>
-        </SidebarInset>
-      </>
-    );
-  }
+  useEffect(() => {
+    loadSubmissions();
+  }, []);
 
   return (
     <>
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="flex-1 bg-gradient-main min-h-screen">
-          <div className="container mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">My Submissions</h1>
-        <p className="text-muted-foreground">
-          Track your progress and analyze your coding journey
-        </p>
-      </div>
+        <main className="min-h-[calc(100vh-3rem)] flex-1 bg-background p-4 sm:p-6">
+          <div className="mx-auto w-full max-w-6xl">
+            <PageHeader
+              path="~/submissions"
+              title="Submissions"
+              description="Every solution you have sent to the judge, newest first."
+            />
 
-      {/* Statistics Cards */}
-      {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
-              <Code className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalSubmissions}</div>
-              <p className="text-xs text-muted-foreground">
-                Across {stats.totalProblems} problems
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.successRate}%</div>
-              <p className="text-xs text-muted-foreground">
-                {stats.successfulSubmissions} successful
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Problems Solved</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.uniqueProblemsSolved}</div>
-              <p className="text-xs text-muted-foreground">
-                Unique problems
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Runtime</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.averageExecutionTime}ms</div>
-              <p className="text-xs text-muted-foreground">
-                Execution time
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Submissions List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Submissions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {submissions.map((submission) => (
-              <div
-                key={submission.id}
-                className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center justify-center w-8">
-                    {submission.success ? (
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <XCircle className="h-5 w-5 text-red-500" />
-                    )}
-                  </div>
-                  
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-medium">{submission.problem.title}</h3>
-                      <Badge 
-                        variant="secondary" 
-                        className={`${getDifficultyColor(submission.problem.difficulty)} text-white text-xs`}
-                      >
-                        {submission.problem.difficulty}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {submission.language}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {formatDate(submission.submittedAt || submission.date)}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-6 text-sm">
-                  <div className="text-center">
-                    <div className="font-bold">
-                      {submission.testsPassed}/{submission.totalTests}
-                    </div>
-                    <div className="text-muted-foreground">Tests</div>
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className="font-bold">{submission.executionTime}ms</div>
-                    <div className="text-muted-foreground">Runtime</div>
-                  </div>
-                  
-                  <div className="text-center">
-                    <Badge 
-                      variant={submission.success ? "default" : "destructive"}
-                      className="font-bold"
-                    >
-                      {submission.success ? "Accepted" : "Failed"}
-                    </Badge>
-                  </div>
-                </div>
+            {needsLogin ? (
+              <div className="rounded-lg border border-border bg-card px-4 py-10 text-center">
+                <p className="text-sm text-muted-foreground">Log in to see your submission history.</p>
+                <Button asChild size="sm" className="mt-4">
+                  <Link href="/login">Log in</Link>
+                </Button>
               </div>
-            ))}
+            ) : error ? (
+              <div className="rounded-lg border border-border bg-card px-4 py-10 text-center">
+                <p className="text-sm text-verdict-wa">{error}</p>
+                <Button onClick={loadSubmissions} variant="outline" size="sm" className="mt-4">
+                  Try again
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                  <StatTile
+                    label="Submissions"
+                    value={loading || !stats ? '—' : stats.totalSubmissions}
+                    hint={stats ? `across ${stats.totalProblems} problems` : undefined}
+                  />
+                  <StatTile
+                    label="Acceptance"
+                    value={loading || !stats ? '—' : `${stats.successRate}%`}
+                    hint={stats ? `${stats.successfulSubmissions} accepted` : undefined}
+                    tone="text-primary"
+                  />
+                  <StatTile label="Problems solved" value={loading || !stats ? '—' : stats.uniqueProblemsSolved} />
+                  <StatTile label="Avg runtime" value={loading || !stats ? '—' : `${stats.averageExecutionTime} ms`} />
+                </div>
+
+                <div className="overflow-hidden rounded-lg border border-border bg-card">
+                  <div className="grid grid-cols-[5.5rem_1fr_5rem] items-center gap-3 border-b border-border bg-muted/40 px-3 py-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground md:grid-cols-[5.5rem_1fr_6rem_6rem_5rem_5rem_8rem]">
+                    <span>Verdict</span>
+                    <span>Problem</span>
+                    <span className="hidden md:block">Difficulty</span>
+                    <span className="hidden md:block">Language</span>
+                    <span className="hidden md:block">Tests</span>
+                    <span>Time</span>
+                    <span className="hidden md:block">Submitted</span>
+                  </div>
+
+                  {loading ? (
+                    Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className="border-b border-border px-3 py-3 last:border-0">
+                        <div className="h-4 w-full animate-pulse rounded bg-muted" />
+                      </div>
+                    ))
+                  ) : submissions.length === 0 ? (
+                    <div className="px-3 py-12 text-center">
+                      <p className="text-sm text-muted-foreground">No submissions yet.</p>
+                      <Button asChild size="sm" className="mt-4">
+                        <Link href="/practice">Browse problems</Link>
+                      </Button>
+                    </div>
+                  ) : (
+                    submissions.map((s) => (
+                      <div key={s.id} className="border-b border-border last:border-0">
+                        <button
+                          onClick={() => setOpen(open === s.id ? null : s.id)}
+                          aria-expanded={open === s.id}
+                          className="grid w-full grid-cols-[5.5rem_1fr_5rem] items-center gap-3 px-3 py-2.5 text-left text-sm hover:bg-muted/50 md:grid-cols-[5.5rem_1fr_6rem_6rem_5rem_5rem_8rem]"
+                        >
+                          <span>
+                            <VerdictBadge verdict={verdictOf(s)} short />
+                          </span>
+                          <span className="truncate font-medium text-foreground">{s.problem.title}</span>
+                          <span className="hidden md:block">
+                            <DifficultyLabel difficulty={s.problem.difficulty} />
+                          </span>
+                          <span className="hidden font-mono text-xs text-muted-foreground md:block">
+                            {getLanguage(s.language).label}
+                          </span>
+                          <span className="tabular hidden font-mono text-xs text-muted-foreground md:block">
+                            {s.testsPassed ?? 0}/{s.totalTests ?? 0}
+                          </span>
+                          <span className="tabular font-mono text-xs text-muted-foreground">{formatTime(s.executionTime)}</span>
+                          <span className="hidden font-mono text-xs text-muted-foreground md:block">
+                            {formatDate(s.submittedAt || s.date)}
+                          </span>
+                        </button>
+                        {open === s.id && (
+                          <div className="border-t border-border bg-editor px-3 py-3">
+                            <div className="mb-2 flex items-center justify-between">
+                              <span className="font-mono text-xs text-muted-foreground">{getLanguage(s.language).file}</span>
+                              <Link href={`/solve/${s.problem.id}`} className="font-mono text-xs text-primary hover:underline">
+                                open problem →
+                              </Link>
+                            </div>
+                            <pre className="max-h-80 overflow-auto whitespace-pre font-mono text-[13px] leading-relaxed text-editor-foreground">
+                              {s.code}
+                            </pre>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
           </div>
-          
-          {submissions.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No submissions found. Start solving problems to see your progress here!</p>
-              <Button className="mt-4" onClick={() => window.location.href = '/practice'}>
-                Browse Problems
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-          </main>
-        </SidebarInset>
-      </>
+        </main>
+      </SidebarInset>
+    </>
   );
 }
