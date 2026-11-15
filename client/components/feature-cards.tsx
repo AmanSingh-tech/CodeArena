@@ -21,7 +21,7 @@ export function FeatureCards() {
       <section className="grid gap-8 border-t border-border py-12 md:grid-cols-3">
         {steps.map((step, i) => (
           <div key={step.title}>
-            <div className="font-mono text-xs text-muted-foreground">{i + 1}</div>
+            <div className="font-mono text-xs font-semibold text-brand-ink">0{i + 1}</div>
             <div className="mt-2 text-sm font-medium text-foreground">{step.title}</div>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
           </div>
@@ -35,7 +35,7 @@ export function FeatureCards() {
             href={link.href}
             className="group flex items-baseline justify-between gap-4 border-b border-border py-3 text-sm last:border-0"
           >
-            <span className="font-medium text-foreground">{link.title}</span>
+            <span className="font-medium text-foreground transition-colors group-hover:text-brand-ink">{link.title}</span>
             <span className="text-muted-foreground transition-colors group-hover:text-foreground">{link.description}</span>
           </Link>
         ))}

@@ -3,63 +3,67 @@
 @tailwind utilities;
 
 /*
- * CodeArena design tokens.
+ * CodeArena design tokens: black and yellow.
  *
- * Minimal and monochrome: neutral greys, hairline borders, no shadows. The
- * primary colour is simply the foreground, so buttons and links stay black or
- * white. Colour is reserved for meaning: verdicts and difficulty.
+ * Near-black surfaces, hairline borders, one signal colour. Yellow is the
+ * primary (buttons, focus, active nav, the cursor); everything else stays
+ * neutral. Verdicts and difficulty keep their own colours, with "medium" and
+ * TLE pushed to orange so they never read as the brand yellow.
  */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
+    --brand: 48 100% 50%;
+    --brand-ink: 38 92% 30%; /* yellow-family text that is readable on white */
+
+    --background: 48 20% 99%;
+    --foreground: 0 0% 6%;
+    --card: 48 20% 99%;
+    --card-foreground: 0 0% 6%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 42%;
-    --accent: 0 0% 38%;
-    --accent-foreground: 0 0% 100%;
+    --popover-foreground: 0 0% 6%;
+    --primary: var(--brand);
+    --primary-foreground: 0 0% 4%;
+    --secondary: 48 12% 94%;
+    --secondary-foreground: 0 0% 6%;
+    --muted: 48 12% 95%;
+    --muted-foreground: 0 0% 38%;
+    --accent: 48 100% 50%;
+    --accent-foreground: 0 0% 4%;
     --destructive: 0 70% 46%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 91%;
-    --input: 0 0% 86%;
-    --ring: 0 0% 45%;
+    --border: 48 8% 88%;
+    --input: 48 8% 82%;
+    --ring: 45 100% 45%;
     --radius: 0.375rem;
-    --chart-1: 0 0% 20%;
-    --chart-2: 0 0% 40%;
-    --chart-3: 0 0% 55%;
-    --chart-4: 0 0% 70%;
+    --chart-1: 48 100% 50%;
+    --chart-2: 0 0% 20%;
+    --chart-3: 0 0% 45%;
+    --chart-4: 0 0% 65%;
     --chart-5: 0 0% 82%;
 
     /* Difficulty and verdict colours */
-    --easy: 160 70% 28%;
-    --medium: 34 92% 36%;
-    --hard: 0 70% 46%;
+    --easy: 152 70% 30%;
+    --medium: 24 95% 42%;
+    --hard: 0 72% 46%;
     --verdict-ac: 145 68% 31%;
-    --verdict-wa: 0 70% 46%;
-    --verdict-tle: 34 92% 36%;
+    --verdict-wa: 0 72% 46%;
+    --verdict-tle: 24 95% 42%;
     --verdict-mle: 265 55% 48%;
-    --verdict-re: 18 85% 42%;
-    --verdict-ce: 0 0% 42%;
+    --verdict-re: 340 70% 45%;
+    --verdict-ce: 0 0% 40%;
 
     /* Editor / console surface */
     --editor: 0 0% 100%;
-    --editor-foreground: 0 0% 9%;
+    --editor-foreground: 0 0% 6%;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 32%;
-    --sidebar-primary: 0 0% 9%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 95.5%;
-    --sidebar-accent-foreground: 0 0% 9%;
-    --sidebar-border: 0 0% 91%;
-    --sidebar-ring: 0 0% 45%;
+    --sidebar-background: 48 20% 98%;
+    --sidebar-foreground: 0 0% 30%;
+    --sidebar-primary: var(--brand);
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent: 48 30% 92%;
+    --sidebar-accent-foreground: 0 0% 4%;
+    --sidebar-border: 48 8% 88%;
+    --sidebar-ring: 45 100% 45%;
 
     --sidebar-width: 13.5rem;
     --sidebar-width-mobile: 13.5rem;
@@ -70,52 +74,61 @@
   }
 
   .dark {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 93%;
+    --brand-ink: var(--brand);
+
+    --background: 0 0% 3%;
+    --foreground: 0 0% 94%;
     --card: 0 0% 5%;
-    --card-foreground: 0 0% 93%;
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 93%;
-    --primary: 0 0% 95%;
-    --primary-foreground: 0 0% 6%;
-    --secondary: 0 0% 11%;
-    --secondary-foreground: 0 0% 93%;
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 0 0% 72%;
-    --accent-foreground: 0 0% 6%;
+    --card-foreground: 0 0% 94%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 94%;
+    --primary: var(--brand);
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 9%;
+    --secondary-foreground: 0 0% 94%;
+    --muted: 0 0% 8%;
+    --muted-foreground: 0 0% 58%;
+    --accent: 48 100% 50%;
+    --accent-foreground: 0 0% 4%;
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 13%;
-    --input: 0 0% 18%;
-    --ring: 0 0% 55%;
-    --chart-1: 0 0% 90%;
-    --chart-2: 0 0% 70%;
-    --chart-3: 0 0% 52%;
-    --chart-4: 0 0% 38%;
+    --border: 0 0% 12%;
+    --input: 0 0% 16%;
+    --ring: 48 100% 50%;
+    --chart-1: 48 100% 50%;
+    --chart-2: 0 0% 85%;
+    --chart-3: 0 0% 62%;
+    --chart-4: 0 0% 42%;
     --chart-5: 0 0% 26%;
 
-    --easy: 160 60% 48%;
-    --medium: 38 92% 56%;
-    --hard: 0 80% 66%;
-    --verdict-ac: 142 62% 50%;
-    --verdict-wa: 0 80% 66%;
-    --verdict-tle: 38 92% 56%;
+    --easy: 152 60% 50%;
+    --medium: 24 95% 60%;
+    --hard: 0 82% 65%;
+    --verdict-ac: 142 62% 52%;
+    --verdict-wa: 0 82% 65%;
+    --verdict-tle: 24 95% 60%;
     --verdict-mle: 265 80% 74%;
-    --verdict-re: 20 90% 62%;
-    --verdict-ce: 0 0% 62%;
+    --verdict-re: 340 80% 68%;
+    --verdict-ce: 0 0% 60%;
 
-    --editor: 0 0% 5%;
+    --editor: 0 0% 3%;
     --editor-foreground: 0 0% 90%;
 
-    --sidebar-background: 0 0% 5%;
-    --sidebar-foreground: 0 0% 62%;
-    --sidebar-primary: 0 0% 95%;
-    --sidebar-primary-foreground: 0 0% 6%;
-    --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 13%;
-    --sidebar-ring: 0 0% 55%;
+    --sidebar-background: 0 0% 2%;
+    --sidebar-foreground: 0 0% 60%;
+    --sidebar-primary: var(--brand);
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent: 0 0% 8%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 11%;
+    --sidebar-ring: 48 100% 50%;
+  }
+}
+
+/* Pages that colour text with "primary" get the readable yellow in light mode. */
+@layer utilities {
+  :root:not(.dark) .text-primary {
+    color: hsl(var(--brand-ink));
   }
 }
 
@@ -134,7 +147,7 @@
     @apply font-mono;
   }
   ::selection {
-    background: hsl(var(--foreground) / 0.16);
+    background: hsl(var(--brand) / 0.35);
   }
 }
 
@@ -334,7 +347,7 @@
 }
 
 .feature-card:hover {
-  border-color: hsl(var(--foreground) / 0.25);
+  border-color: hsl(var(--brand) / 0.6);
 }
 
 .gradient-purple,
@@ -345,7 +358,7 @@
 
 .gradient-blue,
 .gradient-navy {
-  background: hsl(var(--accent));
+  background: hsl(var(--foreground));
 }
 
 .gradient-coral {

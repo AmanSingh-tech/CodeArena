@@ -56,7 +56,7 @@ const groups = [
 export function Logo({ collapsedAware = false }: { collapsedAware?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-2 text-foreground">
-      <span className="font-mono text-sm font-semibold">{">_"}</span>
+      <span className="flex h-6 w-6 items-center justify-center rounded bg-brand font-mono text-[11px] font-bold text-black">{">_"}</span>
       <span className={`text-sm font-semibold tracking-tight ${collapsedAware ? "group-data-[collapsible=icon]:hidden" : ""}`}>
         CodeArena
       </span>
@@ -86,7 +86,7 @@ export function AppSidebar() {
                         asChild
                         isActive={isActive}
                         tooltip={item.name}
-                        className="rounded-md px-3 font-normal text-sidebar-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground"
+                        className="rounded-md px-3 font-normal text-sidebar-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[active=true]:shadow-[inset_2px_0_0_hsl(var(--brand))] [&[data-active=true]>svg]:text-brand-ink"
                       >
                         <Link href={item.href}>
                           <item.icon strokeWidth={1.75} />

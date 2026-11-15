@@ -43,6 +43,10 @@ const config: Config = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          ink: "hsl(var(--brand-ink))",
+        },
         easy: "hsl(var(--easy))",
         medium: "hsl(var(--medium))",
         hard: "hsl(var(--hard))",
